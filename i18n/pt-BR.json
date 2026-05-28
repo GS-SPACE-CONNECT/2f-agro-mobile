@@ -1,150 +1,101 @@
 {
-  "app": {
-    "name": "ForwardService"
+  "tabs": {
+    "home": "Início",
+    "lavouras": "Lavouras",
+    "camera": "Câmera",
+    "cooperativa": "Cooperativa",
+    "perfil": "Perfil"
+  },
+  "auth": {
+    "welcome": "Sua roça,\nno espaço.",
+    "subtitle": "Tecnologia espacial pra quem alimenta o Brasil.",
+    "sign_in": "Entrar como Seu João",
+    "signing_in": "Entrando...",
+    "error": "Não foi possível entrar. Tente de novo."
+  },
+  "home": {
+    "welcome": "Bom dia,\n{{name}}",
+    "error": "Não foi possível atualizar agora.",
+    "error_title": "Sem conexão",
+    "empty_title": "Cadastre sua primeira lavoura",
+    "empty_description": "Vamos começar a monitorar sua produção.",
+    "lavouras_section": "Suas lavouras",
+    "see_all_with_count": "Ver todas ({{count}})",
+    "foto_folha_cta": "Tirar foto da folha",
+    "alert": {
+      "probability_label": "Probabilidade",
+      "window_one": "próximo dia",
+      "window_other": "próximos {{count}} dias",
+      "window": "próximos {{count}} dias",
+      "listen_button": "Ouvir alerta",
+      "no_alerts_label": "Status",
+      "no_alerts_title": "Tudo certo",
+      "no_alerts_subtitle": "Sem alertas hoje."
+    }
+  },
+  "lavouras": {
+    "title": "Suas lavouras",
+    "subtitle": "Tudo o que tá plantando"
+  },
+  "camera": {
+    "title": "Câmera",
+    "subtitle": "Olho na folha",
+    "coming_soon_title": "Em breve",
+    "coming_soon_description": "A câmera vai identificar pragas nas folhas. Disponível na próxima atualização."
+  },
+  "cooperativa": {
+    "title": "Cooperativa",
+    "subtitle": "Sua comunidade",
+    "coming_soon_title": "Em breve",
+    "coming_soon_description": "Aqui você vai ver alertas da região e falar com o agrônomo. Disponível na próxima atualização."
+  },
+  "lavoura_detail": {
+    "coming_soon_title": "Em breve",
+    "coming_soon_description": "Histórico, NDVI e recomendações específicas dessa lavoura. Disponível na próxima atualização."
+  },
+  "alerta_detail": {
+    "coming_soon_title": "Em breve",
+    "coming_soon_description": "Detalhes completos do alerta, leitura por áudio e histórico. Disponível na próxima atualização."
+  },
+  "profile": {
+    "title": "Perfil",
+    "unknown_user": "Usuário",
+    "sign_out": "Sair"
+  },
+  "settings": {
+    "theme": "Tema",
+    "theme_light": "Claro",
+    "theme_dark": "Escuro",
+    "language": "Idioma",
+    "language_value_pt_br": "Português (Brasil)"
+  },
+  "alerta": {
+    "status": {
+      "novo": "Novo",
+      "visto": "Visto",
+      "resolvido": "Resolvido",
+      "expirado": "Expirado"
+    },
+    "severidade": {
+      "baixo": "Baixo",
+      "medio": "Médio",
+      "alto": "Alto",
+      "critico": "Crítico"
+    }
+  },
+  "lavoura": {
+    "saude": {
+      "saudavel": "Saudável",
+      "atencao": "Atenção",
+      "risco": "Risco",
+      "perdida": "Perdida"
+    }
   },
   "common": {
     "retry": "Tentar de novo",
-    "coming_soon": "Em breve",
-    "back": "Voltar"
-  },
-  "intro": {
-    "skip": "Pular"
-  },
-  "auth": {
-    "sign_in": "Entrar",
-    "email": "E-mail",
-    "email_placeholder": "voce@empresa.com",
-    "password": "Senha",
-    "welcome": "Bem-vindo",
-    "subtitle": "Entre para acessar seus leads.",
-    "loading": "Carregando",
-    "signing_in": "Entrando...",
-    "error": "Não foi possível entrar. Verifique suas credenciais.",
-    "forgot_password": "Esqueci minha senha",
-    "forgot_help": "Em breve. Por enquanto, peça um reset ao seu admin."
-  },
-  "tabs": {
-    "home": "Início",
-    "leads": "Leads",
-    "schedule": "Agenda",
-    "profile": "Perfil"
-  },
-  "home": {
-    "welcome": "Bem-vindo, {{name}}",
-    "recent_leads": "Últimos Leads",
-    "empty": "Nenhum lead no momento",
-    "empty_title": "Sem leads por enquanto",
-    "empty_description": "Quando novos leads forem atribuídos a você, eles aparecem aqui.",
-    "error": "Falha ao carregar dados",
-    "error_title": "Sem conexão com o servidor",
-    "hero": {
-      "leads_label": "Leads",
-      "value_label": "Valor"
-    },
-    "see_all_with_count": "Ver todos os {{count}} leads"
-  },
-  "loading": {
-    "profile": "Carregando perfil"
-  },
-  "validation": {
-    "email_required": "Informe seu e-mail",
-    "email_invalid": "E-mail inválido",
-    "password_required": "Informe sua senha",
-    "password_too_short": "Senha precisa de pelo menos {{count}} caracteres",
-    "name_required": "Informe seu nome",
-    "name_short": "Nome muito curto",
-    "required": "Campo obrigatório"
-  },
-  "lead": {
-    "vin_label": "VIN",
-    "priority": "Prioridade",
-    "status": "Status",
-    "reason": "Motivo",
-    "expected_value": "Valor esperado",
-    "view_customer": "Ver cliente",
-    "call": "Ligar",
-    "message": "Enviar WhatsApp",
-    "section": {
-      "reason": "Por que este lead",
-      "value": "Pipeline esperado",
-      "customer": "Cliente",
-      "created": "Criado"
-    },
-    "actions": {
-      "call": "Ligar",
-      "message": "Mensagem",
-      "mark_contacted": "Marcar contato"
-    },
-    "not_found": "Lead não encontrado"
-  },
-  "leads": {
-    "title": "Leads",
-    "subtitle_count_zero": "Nenhum ativo",
-    "subtitle_count_one": "{{count}} ativo",
-    "subtitle_count_other": "{{count}} ativos",
-    "subtitle_showing": "Mostrando {{showing}} de {{total}}",
-    "search_placeholder": "Buscar por VIN ou motivo",
-    "filter": {
-      "all": "Todos",
-      "critical": "Críticos",
-      "today": "Hoje",
-      "forgotten": "Esquecidos"
-    },
-    "empty_search_title": "Nada encontrado",
-    "empty_search_description": "Sem leads para '{{query}}'. Tente VIN parcial ou outro filtro."
-  },
-  "segment": {
-    "fiel": "Fiel",
-    "abandono": "Abandono",
-    "esquecido": "Esquecido",
-    "economico": "Econômico"
-  },
-  "priority": {
-    "low": "Baixa",
-    "medium": "Média",
-    "high": "Alta",
-    "critical": "Crítica"
-  },
-  "status": {
-    "new": "Novo",
-    "assigned": "Atribuído",
-    "contacted": "Contatado",
-    "converted": "Convertido",
-    "lost": "Perdido",
-    "expired": "Expirado"
-  },
-  "profile": {
-    "sign_out": "Sair",
-    "greeting_fallback": "Bem-vindo",
-    "account": "Conta",
-    "appearance": "Aparência",
-    "dark_mode": "Modo escuro",
-    "light_mode": "Modo claro",
-    "theme_auto": "Seguindo o sistema",
-    "theme_manual": "Definido manualmente",
-    "follow_system": "Usar o do sistema",
-    "language": "Idioma",
-    "location": "Localização",
-    "photo": "Foto",
-    "change_photo": "Trocar foto",
-    "change_photo_hint": "Toque para alterar foto",
-    "camera": "Câmera",
-    "gallery": "Galeria",
-    "remove": "Remover",
-    "photo_updated": "Foto atualizada",
-    "photo_failed": "Não foi possível enviar a foto",
-    "photo_removed": "Foto removida",
-    "photo_remove_failed": "Não foi possível remover a foto"
-  },
-  "cta": {
-    "close": "Fechar",
-    "cancel": "Cancelar"
-  },
-  "time": {
-    "now": "agora",
-    "minutes_ago": "há {{count}} min",
-    "hours_ago": "há {{count}}h",
-    "days_ago": "há {{count}} dia",
-    "days_ago_plural": "há {{count}} dias"
+    "back": "Voltar",
+    "loading": "Carregando...",
+    "cancel": "Cancelar",
+    "save": "Salvar"
   }
 }
