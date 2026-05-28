@@ -1,32 +1,48 @@
-// Auth hook built on Supabase. Exposes the current session and a couple of
-// actions. Lightweight by design: everything else reads `supabase.auth` directly.
-// Hook de autenticacao baseado em Supabase.
+// Auth mockada Sprint 1 — sessao hardcoded ("Seu Joao") persistida em
+// AsyncStorage. Sprint 2 substitui por chamadas ao .NET API (/auth/login,
+// /auth/refresh). Interface auth.* fica estavel.
+// Auth: mock no Sprint 1, .NET API no Sprint 2.
 
-import { useEffect, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
-import { supabase } from "./supabase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export function useSession() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+import { STORAGE_KEYS } from "./storage-keys";
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-    const sub = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
-    return () => sub.data.subscription.unsubscribe();
-  }, []);
-
-  return { session, loading };
+export interface Session {
+  user: {
+    id: string;
+    nome: string;
+    fullName: string;
+  };
 }
 
-export async function signInWithEmail(email: string, password: string) {
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-}
+const MOCK_SESSION: Session = {
+  user: {
+    id: "user-1",
+    nome: "Seu Joao",
+    fullName: "Joao da Silva",
+  },
+};
 
-export async function signOut() {
-  await supabase.auth.signOut();
-}
+export const auth = {
+  /** Retorna sessao persistida ou null se nao logado. */
+  async getSession(): Promise<Session | null> {
+    const raw = await AsyncStorage.getItem(STORAGE_KEYS.SESSION);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as Session;
+    } catch {
+      // Storage corrompido — trata como nao logado pra nao crashar.
+      return null;
+    }
+  },
+
+  /** Loga como Seu Joao (mock). Sprint 2: signIn(email, senha). */
+  async signIn(): Promise<Session> {
+    await AsyncStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(MOCK_SESSION));
+    return MOCK_SESSION;
+  },
+
+  async signOut(): Promise<void> {
+    await AsyncStorage.removeItem(STORAGE_KEYS.SESSION);
+  },
+};
