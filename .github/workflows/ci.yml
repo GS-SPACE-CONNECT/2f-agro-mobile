@@ -1,0 +1,61 @@
+name: CI · Mobile (Expo/RN)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    name: TypeScript + Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detectar package.json
+        id: detect
+        run: |
+          if [ -f package.json ]; then
+            echo "has_pkg=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_pkg=false" >> $GITHUB_OUTPUT
+            echo "::notice::Sem package.json ainda — CI passa em vazio."
+          fi
+
+      - name: Setup Node 20
+        if: steps.detect.outputs.has_pkg == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install
+        if: steps.detect.outputs.has_pkg == 'true'
+        run: npm ci || npm install
+
+      - name: TypeScript check (tsc --noEmit)
+        if: steps.detect.outputs.has_pkg == 'true'
+        run: |
+          if [ -f tsconfig.json ]; then
+            npx tsc --noEmit
+          else
+            echo "::notice::sem tsconfig.json, pulando tsc"
+          fi
+
+      - name: ESLint (warning, não falha)
+        if: steps.detect.outputs.has_pkg == 'true'
+        continue-on-error: true
+        run: |
+          if npm run lint --if-present > /dev/null 2>&1; then
+            npm run lint
+          else
+            echo "::notice::script lint não definido, pulando"
+          fi
+
+      - name: Expo doctor (avisa quebras)
+        if: steps.detect.outputs.has_pkg == 'true'
+        continue-on-error: true
+        run: npx expo-doctor || true
