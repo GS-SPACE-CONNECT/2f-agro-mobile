@@ -1,9 +1,8 @@
-// UserLocationProvider: cidade selecionada pelo usuario, persistida em
-// AsyncStorage. Default Sao Paulo. Consumida pelo Globe (cobe marker)
-// e por componentes que mostram a cidade do usuario.
-// Provider de localizacao escolhida no Profile, persiste em storage.
+// UserLocationProvider: propriedade do usuario (fazenda), carregada via
+// api.getMinhaPropriedade() ao boot. Consumida pelo Globe (marker cobe)
+// e por componentes que mostram cidade/nome do dono.
+// Provider da propriedade do usuario (fazenda).
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createContext,
   useCallback,
@@ -14,29 +13,39 @@ import {
   type ReactNode,
 } from "react";
 
-import { CITIES, findCityById, SAO_PAULO, type City } from "@/lib/cities";
-import { STORAGE_KEYS } from "@/lib/storage-keys";
+import { api } from "@/lib/api";
+import type { Propriedade } from "@/lib/types";
 
 interface UserLocationContextValue {
-  city: City;
-  cities: readonly City[];
-  setCity: (city: City) => void;
+  propriedade: Propriedade | null;
+  reload: () => Promise<void>;
   isHydrated: boolean;
 }
 
 const UserLocationContext = createContext<UserLocationContextValue | undefined>(undefined);
 
 export function UserLocationProvider({ children }: { children: ReactNode }) {
-  const [city, setCityState] = useState<City>(SAO_PAULO);
+  const [propriedade, setPropriedade] = useState<Propriedade | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+
+  const reload = useCallback(async () => {
+    try {
+      const p = await api.getMinhaPropriedade();
+      setPropriedade(p);
+    } catch {
+      // Sprint 1: mock nao falha. Sprint 2: tratar erro de API.
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
-    AsyncStorage.getItem(STORAGE_KEYS.CITY)
-      .then((stored) => {
-        if (cancelled || !stored) return;
-        const found = findCityById(stored);
-        if (found) setCityState(found);
+    api
+      .getMinhaPropriedade()
+      .then((p) => {
+        if (!cancelled) setPropriedade(p);
+      })
+      .catch(() => {
+        // Sprint 1: mock nao falha.
       })
       .finally(() => {
         if (!cancelled) setIsHydrated(true);
@@ -46,20 +55,15 @@ export function UserLocationProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const setCity = useCallback((next: City) => {
-    setCityState(next);
-    AsyncStorage.setItem(STORAGE_KEYS.CITY, next.id).catch(() => {
-      // storage failures should not block UX
-    });
-  }, []);
-
   const value = useMemo<UserLocationContextValue>(
-    () => ({ city, cities: CITIES, setCity, isHydrated }),
-    [city, setCity, isHydrated],
+    () => ({ propriedade, reload, isHydrated }),
+    [propriedade, reload, isHydrated],
   );
 
   return (
-    <UserLocationContext.Provider value={value}>{children}</UserLocationContext.Provider>
+    <UserLocationContext.Provider value={value}>
+      {children}
+    </UserLocationContext.Provider>
   );
 }
 
