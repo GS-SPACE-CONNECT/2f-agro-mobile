@@ -1,14 +1,16 @@
-// Home 2F-AGRO — "Sua roca hoje". Layout:
-// - AppBackground gradient vertical
-// - Hero area (altura ~460):
-//   - Greeting "Bom dia, Joao da Silva" Playfair 36 top-left
-//   - RotatingClock HH:MM top-right (memoizado pra nao tickar globo)
-//   - Globe DOM com marker na propriedade (lat/lng vem do contexto)
-//   - AlertCardHero a esquerda com bleed -15px (substitui HeroStatsBlock)
-// - Section title "Suas lavouras" Playfair italic 20
-// - Grid 2-col de 6 LavouraCardCompact
-// - FooterAction "Tirar foto da folha" -> /camera
-// Home 2F-AGRO: greeting + clock + globo + alerta + grid lavouras.
+// Home 2F-AGRO — "Sua roca hoje". Composicao premium minimalista.
+// Layout (TOP -> BOTTOM):
+//   - AppBackground gradient vertical
+//   - Hero area (altura 560):
+//       Row top: Greeting "Bom dia, Joao da Silva" Playfair 36 (esquerda)
+//       Row top: RotatingClock HH:MM (direita, mais abaixo q greeting pra
+//                nao competir; reduzido a 56pt)
+//       Globe DOM com bleed direita (mais abaixo q antes)
+//       AlertCardHero com bleed esquerdo (mais abaixo q antes)
+//   - Section title "Suas lavouras" Playfair italic 20
+//   - Lista vertical de LavouraRow (dot + caps + meta inline, hairline)
+//   - FooterAction "Tirar foto da folha" -> /camera
+// Home: greeting + clock + globo + alerta hero + lista de lavouras + cta.
 
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -28,8 +30,8 @@ import Globe from "@/components/illustrations/Globe.dom";
 import { RotatingClock } from "@/components/illustrations/RotatingClock";
 import { AlertCardHero } from "@/components/domain/AlertCardHero";
 import { AlertCardHeroSkeleton } from "@/components/domain/AlertCardHeroSkeleton";
-import { LavouraCardCompact } from "@/components/domain/LavouraCardCompact";
-import { LavouraCardCompactSkeleton } from "@/components/domain/LavouraCardCompactSkeleton";
+import { LavouraRow } from "@/components/domain/LavouraRow";
+import { LavouraRowSkeleton } from "@/components/domain/LavouraRowSkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
 import { useTheme } from "@/context/ThemeContext";
@@ -39,9 +41,9 @@ import type { Alerta, Lavoura } from "@/lib/types";
 import { fontFamily, radius, spacing, typography, type ThemeColors } from "@/lib/theme";
 
 const TOP_VISIBLE = 6;
-const GRID_HORIZONTAL_PADDING = 30;
-const GRID_GAP = 8;
-const HERO_AREA_HEIGHT = 460;
+const LIST_HORIZONTAL_PADDING = 0; // rows ja tem padding interno
+const SECTION_HORIZONTAL_PADDING = 30;
+const HERO_AREA_HEIGHT = 560;
 
 const Greeting = memo(function Greeting({ fullName }: { fullName: string }) {
   const { colors } = useTheme();
@@ -67,7 +69,7 @@ const HeroDecoration = memo(function HeroDecoration({
         <RotatingClock />
       </View>
       <View style={decorationStyles.globeWrap} pointerEvents="none">
-        <Globe size={324} markerLat={markerLat} markerLng={markerLng} />
+        <Globe size={300} markerLat={markerLat} markerLng={markerLng} />
       </View>
     </>
   );
@@ -112,8 +114,7 @@ export default function HomeScreen() {
   const topLavouras = useMemo(() => lavouras.slice(0, TOP_VISIBLE), [lavouras]);
 
   const handleListen = useCallback(() => {
-    // Sprint 1: haptic ja disparado dentro do AlertCardHero.
-    // Sprint 2: Speech.speak(alerta.tipoLabel + ' ' + ... + recomendacao, { language: 'pt-BR' }).
+    // Sprint 2: Speech.speak(...)
   }, []);
 
   const handleAlertPress = useCallback((a: Alerta) => {
@@ -131,8 +132,6 @@ export default function HomeScreen() {
         contentContainerStyle={styles.list}
         data={initialLoading ? [] : topLavouras}
         keyExtractor={(l) => l.id}
-        numColumns={2}
-        columnWrapperStyle={styles.columnWrapper}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -162,22 +161,16 @@ export default function HomeScreen() {
                 <ErrorBanner message={error} onRetry={() => void load()} />
               </View>
             ) : null}
-            {!initialLoading && topLavouras.length > 0 ? (
-              <Text style={styles.sectionTitle}>{t("home.lavouras_section")}</Text>
-            ) : null}
-            {initialLoading ? (
+            {(initialLoading || topLavouras.length > 0) ? (
               <Text style={styles.sectionTitle}>{t("home.lavouras_section")}</Text>
             ) : null}
           </View>
         }
-        ItemSeparatorComponent={() => <View style={{ height: GRID_GAP }} />}
         ListEmptyComponent={
           initialLoading ? (
-            <View style={styles.skeletonGrid}>
+            <View>
               {[0, 1, 2, 3, 4, 5].map((i) => (
-                <View key={i} style={styles.skeletonCell}>
-                  <LavouraCardCompactSkeleton />
-                </View>
+                <LavouraRowSkeleton key={i} isLast={i === 5} />
               ))}
             </View>
           ) : error ? (
@@ -206,7 +199,7 @@ export default function HomeScreen() {
           )
         }
         ListFooterComponent={
-          !initialLoading ? (
+          !initialLoading && topLavouras.length > 0 ? (
             <View style={styles.footerWrap}>
               <FooterAction
                 icon="camera"
@@ -216,9 +209,10 @@ export default function HomeScreen() {
             </View>
           ) : null
         }
-        renderItem={({ item }) => (
-          <LavouraCardCompact
+        renderItem={({ item, index }) => (
+          <LavouraRow
             lavoura={item}
+            isLast={index === topLavouras.length - 1}
             onPress={() => router.push(`/lavoura/${item.id}` as never)}
           />
         )}
@@ -228,17 +222,21 @@ export default function HomeScreen() {
 }
 
 const decorationStyles = StyleSheet.create({
+  // Clock posicionado bem abaixo do greeting (greeting wrap 2 linhas ~135px)
+  // pra nunca encostar em "Joao da Silva".
   clockWrap: {
     position: "absolute",
-    left: 190,
-    top: 100,
+    right: -20,
+    top: 200,
   },
+  // Globe posicionado abaixo do clock, com bleed direita (~half off-screen).
+  // Tamanho 300 (era 324) pra reduzir competicao visual com o AlertCardHero.
   globeWrap: {
     position: "absolute",
-    left: 185,
-    top: 130,
-    width: 324,
-    height: 315,
+    right: -130,
+    top: 240,
+    width: 300,
+    height: 300,
   },
 });
 
@@ -252,38 +250,25 @@ function createStyles(c: ThemeColors) {
     },
     alertWrap: {
       position: "absolute",
-      left: -15,
-      top: 192,
-    },
-    columnWrapper: {
-      gap: GRID_GAP,
-      paddingHorizontal: GRID_HORIZONTAL_PADDING,
+      left: -10,
+      top: 320,
     },
     sectionTitle: {
       ...typography.hSectionItalic,
       color: c.text,
-      paddingHorizontal: GRID_HORIZONTAL_PADDING,
+      paddingHorizontal: SECTION_HORIZONTAL_PADDING,
       marginTop: spacing.sm,
       marginBottom: spacing.md,
     },
     errorWrap: {
-      paddingHorizontal: GRID_HORIZONTAL_PADDING,
+      paddingHorizontal: SECTION_HORIZONTAL_PADDING,
       marginBottom: spacing.lg,
-    },
-    skeletonGrid: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      paddingHorizontal: GRID_HORIZONTAL_PADDING,
-      gap: GRID_GAP,
-    },
-    skeletonCell: {
-      width: "48%",
     },
     emptyWrap: {
       alignItems: "center",
       marginTop: spacing["2xl"],
       gap: spacing.lg,
-      paddingHorizontal: GRID_HORIZONTAL_PADDING,
+      paddingHorizontal: SECTION_HORIZONTAL_PADDING,
     },
     retryPill: {
       paddingVertical: spacing.md - 2,
@@ -297,14 +282,14 @@ function createStyles(c: ThemeColors) {
       color: c.primaryText,
     },
     footerWrap: {
-      paddingHorizontal: GRID_HORIZONTAL_PADDING,
-      marginTop: spacing.xl,
+      paddingHorizontal: SECTION_HORIZONTAL_PADDING,
+      marginTop: spacing["2xl"],
     },
     greeting: {
       ...typography.hDisplay,
       color: c.text,
-      paddingHorizontal: GRID_HORIZONTAL_PADDING,
-      maxWidth: 280,
+      paddingHorizontal: SECTION_HORIZONTAL_PADDING,
+      maxWidth: 260,
     },
   });
 }

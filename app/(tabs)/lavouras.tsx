@@ -1,5 +1,5 @@
-// Lavouras — lista completa com filtros (Sprint 2). Sprint 1: lista
-// simples vertical com mesmo card compact da home.
+// Lavouras — lista vertical completa. Sprint 1: sem filtros. Mesmo
+// design da home (LavouraRow), apenas com header.
 // Lista de lavouras: vertical, todas visiveis.
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -10,16 +10,15 @@ import { useTranslation } from "react-i18next";
 import { AppBackground } from "@/components/ui/AppBackground";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
-import { LavouraCardCompact } from "@/components/domain/LavouraCardCompact";
-import { LavouraCardCompactSkeleton } from "@/components/domain/LavouraCardCompactSkeleton";
+import { LavouraRow } from "@/components/domain/LavouraRow";
+import { LavouraRowSkeleton } from "@/components/domain/LavouraRowSkeleton";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useTheme } from "@/context/ThemeContext";
 import { ApiError, api } from "@/lib/api";
 import type { Lavoura } from "@/lib/types";
 import { spacing, type ThemeColors } from "@/lib/theme";
 
-const GRID_HORIZONTAL_PADDING = 30;
-const GRID_GAP = 8;
+const HORIZONTAL_PADDING = 30;
 
 export default function LavourasScreen() {
   const { t } = useTranslation();
@@ -61,8 +60,6 @@ export default function LavourasScreen() {
         contentContainerStyle={styles.list}
         data={initialLoading ? [] : lavouras}
         keyExtractor={(l) => l.id}
-        numColumns={2}
-        columnWrapperStyle={styles.columnWrapper}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -80,14 +77,11 @@ export default function LavourasScreen() {
             ) : null}
           </View>
         }
-        ItemSeparatorComponent={() => <View style={{ height: GRID_GAP }} />}
         ListEmptyComponent={
           initialLoading ? (
-            <View style={styles.skeletonGrid}>
+            <View>
               {[0, 1, 2, 3, 4, 5].map((i) => (
-                <View key={i} style={styles.skeletonCell}>
-                  <LavouraCardCompactSkeleton />
-                </View>
+                <LavouraRowSkeleton key={i} isLast={i === 5} />
               ))}
             </View>
           ) : error ? (
@@ -104,9 +98,10 @@ export default function LavourasScreen() {
             />
           )
         }
-        renderItem={({ item }) => (
-          <LavouraCardCompact
+        renderItem={({ item, index }) => (
+          <LavouraRow
             lavoura={item}
+            isLast={index === lavouras.length - 1}
             onPress={() => router.push(`/lavoura/${item.id}` as never)}
           />
         )}
@@ -119,22 +114,9 @@ function createStyles(_c: ThemeColors) {
   return StyleSheet.create({
     container: { backgroundColor: "transparent" },
     list: { paddingBottom: spacing["6xl"] },
-    columnWrapper: {
-      gap: GRID_GAP,
-      paddingHorizontal: GRID_HORIZONTAL_PADDING,
-    },
     errorWrap: {
-      paddingHorizontal: GRID_HORIZONTAL_PADDING,
+      paddingHorizontal: HORIZONTAL_PADDING,
       marginBottom: spacing.lg,
-    },
-    skeletonGrid: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      paddingHorizontal: GRID_HORIZONTAL_PADDING,
-      gap: GRID_GAP,
-    },
-    skeletonCell: {
-      width: "48%",
     },
   });
 }

@@ -1,12 +1,12 @@
-// AlertCardHero — composicao editorial minimalista pra slot esquerdo da home,
-// adjacente ao globo. Sem chrome de card pesado: bg fantasma, sem border, sem
-// divider. Hierarquia tipografica leva a leitura:
-//   1. Probabilidade gigante (Playfair 60) na cor da severidade
-//   2. Tipo do alerta caps espacado (Playfair Italic 16, letterSpacing 4)
-//   3. Acento horizontal sutil (24px linha)
-//   4. Recomendacao em Playfair Italic
-//   5. Metadata (severidade + janela) em Manrope Light caps
-// Numero hero + acento serif + meta caps = estetica editorial premium.
+// AlertCardHero — composicao 100% Manrope. Estetica thin-weight + caps
+// + acento sutil. Sem chrome de card; apenas tipografia sobre o gradient.
+//   1. Numero hero (Manrope Light 72) — herois sao thin no premium tech
+//   2. % suffix menor (Light 28)
+//   3. Kicker "SECA" caps SemiBold com letterSpacing 4 na cor da severidade
+//   4. Acento horizontal 24px na cor da severidade
+//   5. Recomendacao Regular 13, lineHeight 19
+//   6. Meta caps Light com bullet separador
+// Manrope thin = estetica Apple/Linear/Vercel premium.
 
 import { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -46,12 +46,13 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
     onPress?.(alerta);
   }, [alerta, onPress]);
 
-  // Estado vazio — composicao identica, mas com sucesso como heroi.
   if (!alerta) {
     return (
       <View style={styles.container}>
         <Text style={[styles.hero, { color: colors.success }]}>OK</Text>
-        <Text style={styles.kicker}>{t("home.alert.no_alerts_kicker")}</Text>
+        <Text style={[styles.kicker, { color: colors.success }]}>
+          {t("home.alert.no_alerts_kicker")}
+        </Text>
         <View style={[styles.accent, { backgroundColor: colors.success }]} />
         <Text style={styles.body}>{t("home.alert.no_alerts_body")}</Text>
         <Text style={styles.meta}>{t("home.alert.no_alerts_meta")}</Text>
@@ -61,12 +62,12 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
 
   const palette = alertaSeveridadePalette[alerta.severidade];
   const probPct = Math.round(alerta.probabilidade * 100);
-  const severidadeLabel = t(palette.labelKey);
+  const severidadeLabel = t(palette.labelKey).toUpperCase();
+  const janelaText = t("home.alert.window", { count: alerta.janelaDias }).toUpperCase();
 
   return (
     <Pressable onPress={handlePress} disabled={!onPress}>
       <View style={styles.container}>
-        {/* TTS ghost button, top-right, sem chrome */}
         <Pressable
           onPress={handleListen}
           hitSlop={10}
@@ -74,32 +75,26 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
           accessibilityLabel={t("home.alert.listen_button")}
           style={({ pressed }) => [styles.listenBtn, pressed && { opacity: 0.5 }]}
         >
-          <Ionicons name="volume-medium-outline" size={16} color={colors.textMuted} />
+          <Ionicons name="volume-medium-outline" size={14} color={colors.textMuted} />
         </Pressable>
 
-        {/* Hero: numero gigante serif na cor da severidade */}
         <Text style={[styles.hero, { color: palette.color }]} numberOfLines={1}>
           {probPct}
-          <Text style={styles.heroSuffix}>%</Text>
+          <Text style={[styles.heroSuffix, { color: palette.color }]}>%</Text>
         </Text>
 
-        {/* Kicker: tipo do alerta em caps com letterspacing editorial */}
-        <Text style={styles.kicker} numberOfLines={1}>
-          {alerta.tipoLabel.split("").join(" ")}
+        <Text style={[styles.kicker, { color: palette.color }]} numberOfLines={1}>
+          {alerta.tipoLabel}
         </Text>
 
-        {/* Acento horizontal — 24px, cor da severidade, sem opacity */}
         <View style={[styles.accent, { backgroundColor: palette.color }]} />
 
-        {/* Recomendacao em Playfair Italic, max 3 linhas, lineHeight generoso */}
         <Text style={styles.body} numberOfLines={3}>
           {alerta.recomendacao}
         </Text>
 
-        {/* Metadata: severidade + janela, italic minusculo Manrope */}
         <Text style={styles.meta} numberOfLines={1}>
-          {severidadeLabel.toLowerCase()} ·{" "}
-          {t("home.alert.window", { count: alerta.janelaDias })}
+          {severidadeLabel} · {janelaText}
         </Text>
       </View>
     </Pressable>
@@ -109,39 +104,36 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
 function createStyles(c: ThemeColors) {
   return StyleSheet.create({
     container: {
-      width: 180,
-      minHeight: 202,
-      // bg fantasma — apenas pra texturar levemente sobre o gradient.
-      // Sem border, sem radius pesado, sem padding excessivo.
+      width: 196,
+      minHeight: 220,
       paddingHorizontal: spacing.lg,
-      paddingTop: spacing.xl,
+      paddingTop: spacing["2xl"],
       paddingBottom: spacing.lg,
     },
     listenBtn: {
       position: "absolute",
-      top: spacing.sm,
-      right: spacing.sm,
-      width: 24,
-      height: 24,
+      top: spacing.md,
+      right: spacing.md,
+      width: 22,
+      height: 22,
       alignItems: "center",
       justifyContent: "center",
     },
     hero: {
-      fontFamily: fontFamily.displayRegular,
-      fontSize: 64,
-      lineHeight: 64,
-      letterSpacing: -3,
+      fontFamily: fontFamily.light,
+      fontSize: 72,
+      lineHeight: 72,
+      letterSpacing: -4,
     },
     heroSuffix: {
-      fontFamily: fontFamily.displayRegular,
-      fontSize: 24,
+      fontFamily: fontFamily.light,
+      fontSize: 28,
       letterSpacing: -1,
     },
     kicker: {
-      fontFamily: fontFamily.displayItalic,
-      fontSize: 13,
-      letterSpacing: 3,
-      color: c.text,
+      fontFamily: fontFamily.semibold,
+      fontSize: 11,
+      letterSpacing: 4,
       marginTop: spacing.xs,
       textTransform: "uppercase",
     },
@@ -152,18 +144,18 @@ function createStyles(c: ThemeColors) {
       marginBottom: spacing.md,
     },
     body: {
-      fontFamily: fontFamily.displayItalic,
-      fontSize: 14,
+      fontFamily: fontFamily.regular,
+      fontSize: 13,
       lineHeight: 19,
-      letterSpacing: -0.2,
+      letterSpacing: -0.1,
       color: c.text,
     },
     meta: {
       fontFamily: fontFamily.light,
-      fontSize: 10,
-      letterSpacing: 0.5,
+      fontSize: 9,
+      letterSpacing: 1.5,
       color: c.textMuted,
-      marginTop: spacing.md,
+      marginTop: spacing.lg,
       textTransform: "uppercase",
     },
   });

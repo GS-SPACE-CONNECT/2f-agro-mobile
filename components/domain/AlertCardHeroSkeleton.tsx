@@ -1,6 +1,5 @@
-// Skeleton do AlertCardHero novo — espelha a composicao editorial:
-// numero hero, kicker, acento, body, meta. Sem chrome de container.
-// Skeleton minimal espelha layout do hero.
+// Skeleton do AlertCardHero — espelha a nova composicao Manrope.
+// Skeleton minimal: numero, kicker, acento, body, meta.
 
 import { StyleSheet, View } from "react-native";
 
@@ -13,27 +12,22 @@ export function AlertCardHeroSkeleton() {
 
   return (
     <View style={styles.container}>
-      {/* Hero number */}
-      <Skeleton width={110} height={56} borderRadius={4} />
-      {/* Kicker */}
-      <Skeleton width={70} height={11} borderRadius={3} style={styles.kicker} />
-      {/* Accent line */}
+      <Skeleton width={130} height={66} borderRadius={4} />
+      <Skeleton width={50} height={10} borderRadius={3} style={styles.kicker} />
       <View style={[styles.accent, { backgroundColor: colors.borderStrong }]} />
-      {/* Body lines */}
-      <Skeleton width={148} height={13} borderRadius={3} style={styles.bodyLine} />
-      <Skeleton width={130} height={13} borderRadius={3} style={styles.bodyLine} />
-      {/* Meta */}
-      <Skeleton width={90} height={9} borderRadius={3} style={styles.meta} />
+      <Skeleton width={160} height={12} borderRadius={3} style={styles.bodyLine} />
+      <Skeleton width={140} height={12} borderRadius={3} style={styles.bodyLine} />
+      <Skeleton width={100} height={9} borderRadius={3} style={styles.meta} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: 180,
-    minHeight: 202,
+    width: 196,
+    minHeight: 220,
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
+    paddingTop: spacing["2xl"],
     paddingBottom: spacing.lg,
   },
   kicker: { marginTop: spacing.sm },
@@ -44,5 +38,5 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   bodyLine: { marginTop: 4 },
-  meta: { marginTop: spacing.md },
+  meta: { marginTop: spacing.lg },
 });
