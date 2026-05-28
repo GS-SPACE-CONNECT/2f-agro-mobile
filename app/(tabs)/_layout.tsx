@@ -1,9 +1,6 @@
-// Tab bar — Glass Minimalist redesign (Fase 2, screen 6/6).
-// Bar is absolute-positioned and uses GlassSurface variant="thick" as the
-// background; expo-router renders the labels/icons on top. Active tint moves
-// from primary (was Ford Blue) to text token so it reads in both modes.
-//
-// Tab bar glass thick flutuando sobre conteudo (estilo iOS).
+// Tab bar 2F-AGRO: 5 abas (Home, Lavouras, Camera, Cooperativa, Perfil).
+// Glass thick mantida do forward.
+// Tab bar: 5 abas glass.
 
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
@@ -15,7 +12,7 @@ import { GlassSurface } from "@/components/ui/GlassSurface";
 import { useTheme } from "@/context/ThemeContext";
 import { fontFamily } from "@/lib/theme";
 
-type TabIconKey = "index" | "leads" | "profile";
+type TabIconKey = "index" | "lavouras" | "camera" | "cooperativa" | "profile";
 
 type TabIconRenderProps = {
   color: string;
@@ -28,7 +25,9 @@ const ICONS: Record<
   { focused: keyof typeof Ionicons.glyphMap; unfocused: keyof typeof Ionicons.glyphMap }
 > = {
   index: { focused: "home", unfocused: "home-outline" },
-  leads: { focused: "briefcase", unfocused: "briefcase-outline" },
+  lavouras: { focused: "leaf", unfocused: "leaf-outline" },
+  camera: { focused: "camera", unfocused: "camera-outline" },
+  cooperativa: { focused: "people", unfocused: "people-outline" },
   profile: { focused: "person-circle", unfocused: "person-circle-outline" },
 };
 
@@ -52,21 +51,8 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        // react-navigation/bottom-tabs v7 paints the scene container white by
-        // default; without this the mesh background gets covered inside tabs.
-        // sceneStyle no v7 substituiu sceneContainerStyle do v6.
         sceneStyle: { backgroundColor: "transparent" },
-        // animation 'none' avoids the visible overlap when both scenes are
-        // transparent and the cross-fade momentarily renders both stacked.
-        // Sem isso, a troca de aba mostra ambas as cenas sobrepostas.
         animation: "none",
-        // freezeOnBlur + lazy: react-navigation v7 keeps inactive scenes
-        // mounted by default. With transparent sceneStyle both render at once
-        // visually. freezeOnBlur pauses inactive scenes, lazy delays the first
-        // render of unfocused tabs until they get touched. Together they keep
-        // the swap clean without ghost layers.
-        // Sem isso, cenas inativas ficam visiveis sobrepostas; lazy/freeze
-        // garantem que so a ativa pinta.
         freezeOnBlur: true,
         lazy: true,
         tabBarStyle: {
@@ -78,10 +64,6 @@ export default function TabsLayout() {
           borderTopWidth: 0,
           elevation: 0,
         },
-        // Hairline divider on top so the tab bar reads as detached, not
-        // floating ambiguously over content. Background usa bottomBarBg do
-        // theme (Figma node 1:2 / 8:55), quase opaco (0.98) e com tint de
-        // light/dark. GlassSurface mantida pra blur sutil residual.
         tabBarBackground: () => (
           <GlassSurface
             variant="thick"
@@ -111,12 +93,20 @@ export default function TabsLayout() {
         options={{ title: t("tabs.home"), tabBarIcon: makeTabIcon("index") }}
       />
       <Tabs.Screen
-        name="leads"
-        options={{ title: t("tabs.leads"), tabBarIcon: makeTabIcon("leads") }}
+        name="lavouras"
+        options={{ title: t("tabs.lavouras"), tabBarIcon: makeTabIcon("lavouras") }}
+      />
+      <Tabs.Screen
+        name="camera"
+        options={{ title: t("tabs.camera"), tabBarIcon: makeTabIcon("camera") }}
+      />
+      <Tabs.Screen
+        name="cooperativa"
+        options={{ title: t("tabs.cooperativa"), tabBarIcon: makeTabIcon("cooperativa") }}
       />
       <Tabs.Screen
         name="profile"
-        options={{ title: t("tabs.profile"), tabBarIcon: makeTabIcon("profile") }}
+        options={{ title: t("tabs.perfil"), tabBarIcon: makeTabIcon("profile") }}
       />
     </Tabs>
   );

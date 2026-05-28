@@ -1,16 +1,14 @@
-// Home — Figma pixel-perfect redesign (2026-05-25).
-// Layout (Figma node 1:2 light / 8:55 dark):
-//   - AppBackground gradient vertical fullscreen
-//   - Hero area (altura ~460) absolute positioned:
-//       greeting "Bem-vindo, {nome completo}" Playfair 36 top-left
-//       RotatingClock HH:MM gigante top-right
-//       Globe DOM Component pontilhado canto direito
-//       HeroStatsBlock vertical com bleed -80 a esquerda (Leads + Valor)
-//   - SectionTitle "Ultimos Leads" Playfair italic 20
-//   - Grid 2 colunas de LeadCardCompact (3 linhas, 6 leads)
-//   - SeeAllPill no footer quando ha mais leads
-// Spec: docs/superpowers/specs/2026-05-25-mobile-dashboard-redesign-design.md
-// Home redesign: greeting + clock + globe + hero vertical + grid de cards.
+// Home 2F-AGRO — "Sua roca hoje". Layout:
+// - AppBackground gradient vertical
+// - Hero area (altura ~460):
+//   - Greeting "Bom dia, Joao da Silva" Playfair 36 top-left
+//   - RotatingClock HH:MM top-right (memoizado pra nao tickar globo)
+//   - Globe DOM com marker na propriedade (lat/lng vem do contexto)
+//   - AlertCardHero a esquerda com bleed -15px (substitui HeroStatsBlock)
+// - Section title "Suas lavouras" Playfair italic 20
+// - Grid 2-col de 6 LavouraCardCompact
+// - FooterAction "Tirar foto da folha" -> /camera
+// Home 2F-AGRO: greeting + clock + globo + alerta + grid lavouras.
 
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -25,46 +23,33 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 import { AppBackground } from "@/components/ui/AppBackground";
+import { FooterAction } from "@/components/ui/FooterAction";
 import Globe from "@/components/illustrations/Globe.dom";
 import { RotatingClock } from "@/components/illustrations/RotatingClock";
-import { HeroStatsBlock, type HeroStatsItem } from "@/components/ui/HeroStatsBlock";
-import { LeadCardCompact } from "@/components/domain/LeadCardCompact";
-import { LeadCardCompactSkeleton } from "@/components/domain/LeadCardCompactSkeleton";
+import { AlertCardHero } from "@/components/domain/AlertCardHero";
+import { AlertCardHeroSkeleton } from "@/components/domain/AlertCardHeroSkeleton";
+import { LavouraCardCompact } from "@/components/domain/LavouraCardCompact";
+import { LavouraCardCompactSkeleton } from "@/components/domain/LavouraCardCompactSkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
 import { useTheme } from "@/context/ThemeContext";
 import { useUserLocation } from "@/context/UserLocationContext";
-import { ACTIVE_LEAD_STATUSES, api, ApiError, type Lead } from "@/lib/api";
-import { toFullName, toFriendlyFirstName } from "@/lib/displayName";
-import { formatBRL } from "@/lib/format";
-import { fetchMyProfile } from "@/lib/profile";
-import { supabase } from "@/lib/supabase";
+import { ApiError, api } from "@/lib/api";
+import type { Alerta, Lavoura } from "@/lib/types";
 import { fontFamily, radius, spacing, typography, type ThemeColors } from "@/lib/theme";
 
-type HeroStats = {
-  activeLeads: number;
-  pipelineBRL: number;
-};
-
 const TOP_VISIBLE = 6;
-const HERO_FETCH_LIMIT = 200;
 const GRID_HORIZONTAL_PADDING = 30;
 const GRID_GAP = 8;
 const HERO_AREA_HEIGHT = 460;
 
-function computeHeroStats(leads: Lead[]): HeroStats {
-  const activeLeads = leads.filter((l) => ACTIVE_LEAD_STATUSES.has(l.status)).length;
-  const pipelineBRL = leads.reduce((sum, l) => sum + (l.expected_value_brl ?? 0), 0);
-  return { activeLeads, pipelineBRL };
-}
-
-const Greeting = memo(function Greeting({ name }: { name: string }) {
+const Greeting = memo(function Greeting({ fullName }: { fullName: string }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(colors), [colors]);
   return (
     <Text style={styles.greeting} numberOfLines={2}>
-      {t("home.welcome", { name })}
+      {t("home.welcome", { name: fullName })}
     </Text>
   );
 });
@@ -91,20 +76,21 @@ const HeroDecoration = memo(function HeroDecoration({
 export default function HomeScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const { city } = useUserLocation();
+  const { propriedade } = useUserLocation();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
-  const [leads, setLeads] = useState<Lead[]>([]);
+  const [lavouras, setLavouras] = useState<Lavoura[]>([]);
+  const [alerta, setAlerta] = useState<Alerta | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState<string>("");
 
   const load = useCallback(async () => {
     setError(null);
     try {
-      const data = await api.listLeads({ limit: HERO_FETCH_LIMIT });
-      setLeads(data);
+      const [l, a] = await Promise.all([api.listLavouras(), api.getCurrentAlert()]);
+      setLavouras(l);
+      setAlerta(a);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : t("home.error"));
     }
@@ -117,50 +103,33 @@ export default function HomeScreen() {
     })();
   }, [load]);
 
-  useEffect(() => {
-    void (async () => {
-      const profile = await fetchMyProfile().catch(() => null);
-      if (profile?.full_name) {
-        setName(toFullName(profile.full_name));
-        return;
-      }
-      const auth = await supabase.auth.getUser();
-      const email = auth.data.user?.email;
-      if (email) {
-        const local = email.split("@")[0] ?? "";
-        setName(toFriendlyFirstName(local));
-      }
-    })();
-  }, []);
-
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await load();
     setRefreshing(false);
   }, [load]);
 
-  const hero = useMemo(() => computeHeroStats(leads), [leads]);
-  const topLeads = useMemo(() => leads.slice(0, TOP_VISIBLE), [leads]);
+  const topLavouras = useMemo(() => lavouras.slice(0, TOP_VISIBLE), [lavouras]);
 
-  const showHero = !(error && leads.length === 0);
+  const handleListen = useCallback(() => {
+    // Sprint 1: haptic ja disparado dentro do AlertCardHero.
+    // Sprint 2: Speech.speak(alerta.tipoLabel + ' ' + ... + recomendacao, { language: 'pt-BR' }).
+  }, []);
 
-  const heroItems = useMemo<readonly [HeroStatsItem, HeroStatsItem]>(
-    () => [
-      { label: t("home.hero.leads_label"), value: String(hero.activeLeads) },
-      {
-        label: t("home.hero.value_label"),
-        value: formatBRL(hero.pipelineBRL, { compact: true, omitCurrency: true }),
-      },
-    ],
-    [hero, t],
-  );
+  const handleAlertPress = useCallback((a: Alerta) => {
+    router.push(`/alerta/${a.id}` as never);
+  }, []);
+
+  const fullName = propriedade?.donoFullName ?? "";
+  const markerLat = propriedade?.lat ?? -8.2839;
+  const markerLng = propriedade?.lng ?? -35.9758;
 
   return (
     <AppBackground>
       <FlatList
         style={styles.container}
         contentContainerStyle={styles.list}
-        data={initialLoading ? [] : topLeads}
+        data={initialLoading ? [] : topLavouras}
         keyExtractor={(l) => l.id}
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
@@ -174,24 +143,30 @@ export default function HomeScreen() {
         ListHeaderComponent={
           <View>
             <View style={styles.heroArea}>
-              <Greeting name={name} />
-              <HeroDecoration markerLat={city.lat} markerLng={city.lng} />
-              {showHero ? (
-                <View style={styles.heroStatsWrap}>
-                  <HeroStatsBlock items={heroItems} />
-                </View>
-              ) : null}
+              <Greeting fullName={fullName} />
+              <HeroDecoration markerLat={markerLat} markerLng={markerLng} />
+              <View style={styles.alertWrap}>
+                {initialLoading ? (
+                  <AlertCardHeroSkeleton />
+                ) : (
+                  <AlertCardHero
+                    alerta={alerta}
+                    onListen={handleListen}
+                    onPress={handleAlertPress}
+                  />
+                )}
+              </View>
             </View>
-            {error && leads.length > 0 ? (
+            {error && lavouras.length > 0 ? (
               <View style={styles.errorWrap}>
                 <ErrorBanner message={error} onRetry={() => void load()} />
               </View>
             ) : null}
-            {!initialLoading && topLeads.length > 0 ? (
-              <Text style={styles.sectionTitle}>{t("home.recent_leads")}</Text>
+            {!initialLoading && topLavouras.length > 0 ? (
+              <Text style={styles.sectionTitle}>{t("home.lavouras_section")}</Text>
             ) : null}
             {initialLoading ? (
-              <Text style={styles.sectionTitle}>{t("home.recent_leads")}</Text>
+              <Text style={styles.sectionTitle}>{t("home.lavouras_section")}</Text>
             ) : null}
           </View>
         }
@@ -201,7 +176,7 @@ export default function HomeScreen() {
             <View style={styles.skeletonGrid}>
               {[0, 1, 2, 3, 4, 5].map((i) => (
                 <View key={i} style={styles.skeletonCell}>
-                  <LeadCardCompactSkeleton />
+                  <LavouraCardCompactSkeleton />
                 </View>
               ))}
             </View>
@@ -224,34 +199,27 @@ export default function HomeScreen() {
             </View>
           ) : (
             <EmptyState
-              icon="briefcase-outline"
+              icon="leaf-outline"
               title={t("home.empty_title")}
               description={t("home.empty_description")}
             />
           )
         }
         ListFooterComponent={
-          !initialLoading && leads.length > TOP_VISIBLE ? (
-            <Pressable
-              onPress={() => router.push("/leads")}
-              accessibilityRole="button"
-              style={({ pressed }) => [styles.seeAll, pressed && { opacity: 0.7 }]}
-            >
-              <Text style={styles.seeAllLabel}>
-                {t("home.see_all_with_count", { count: leads.length })}
-              </Text>
-            </Pressable>
+          !initialLoading ? (
+            <View style={styles.footerWrap}>
+              <FooterAction
+                icon="camera"
+                label={t("home.foto_folha_cta")}
+                onPress={() => router.push("/camera" as never)}
+              />
+            </View>
           ) : null
         }
         renderItem={({ item }) => (
-          <LeadCardCompact
-            lead={item}
-            onPress={() =>
-              router.push({
-                pathname: "/lead/[id]",
-                params: { id: item.id },
-              })
-            }
+          <LavouraCardCompact
+            lavoura={item}
+            onPress={() => router.push(`/lavoura/${item.id}` as never)}
           />
         )}
       />
@@ -262,14 +230,9 @@ export default function HomeScreen() {
 const decorationStyles = StyleSheet.create({
   clockWrap: {
     position: "absolute",
-    // Clock empurrado +15px pra direita (175 -> 190) pra distanciar
-    // do bleed do hero card a esquerda em viewports menores.
     left: 190,
     top: 100,
   },
-  // Globe posicionado com bleed a direita: ~half dele sai pela borda
-  // direita da tela em viewport mobile (393px). Cria efeito editorial
-  // simetrico ao bleed do hero card a esquerda.
   globeWrap: {
     position: "absolute",
     left: 185,
@@ -287,11 +250,8 @@ function createStyles(c: ThemeColors) {
       height: HERO_AREA_HEIGHT,
       paddingTop: 45,
     },
-    heroStatsWrap: {
+    alertWrap: {
       position: "absolute",
-      // bleed leve (-20): card sai um pouco da borda esquerda mantendo
-      // ar editorial, mas com texto "Leads / Valor" visivel na tela.
-      // Figma original tinha -80 mas escondia o texto inteiro em mobile.
       left: -15,
       top: 192,
     },
@@ -317,8 +277,6 @@ function createStyles(c: ThemeColors) {
       gap: GRID_GAP,
     },
     skeletonCell: {
-      // 2 colunas: (viewport - 2*padding - gap) / 2 = width disponivel.
-      // Calculo em width:'48%' aproxima sem precisar saber viewport.
       width: "48%",
     },
     emptyWrap: {
@@ -338,18 +296,9 @@ function createStyles(c: ThemeColors) {
       fontFamily: fontFamily.semibold,
       color: c.primaryText,
     },
-    seeAll: {
+    footerWrap: {
+      paddingHorizontal: GRID_HORIZONTAL_PADDING,
       marginTop: spacing.xl,
-      marginHorizontal: spacing["2xl"],
-      paddingVertical: spacing.md,
-      borderRadius: radius.pill,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: c.borderStrong,
-      alignItems: "center",
-    },
-    seeAllLabel: {
-      ...typography.caption,
-      color: c.text,
     },
     greeting: {
       ...typography.hDisplay,
