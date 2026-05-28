@@ -1,0 +1,150 @@
+{
+  "app": {
+    "name": "ForwardService"
+  },
+  "common": {
+    "retry": "Tentar de novo",
+    "coming_soon": "Em breve",
+    "back": "Voltar"
+  },
+  "intro": {
+    "skip": "Pular"
+  },
+  "auth": {
+    "sign_in": "Entrar",
+    "email": "E-mail",
+    "email_placeholder": "voce@empresa.com",
+    "password": "Senha",
+    "welcome": "Bem-vindo",
+    "subtitle": "Entre para acessar seus leads.",
+    "loading": "Carregando",
+    "signing_in": "Entrando...",
+    "error": "Não foi possível entrar. Verifique suas credenciais.",
+    "forgot_password": "Esqueci minha senha",
+    "forgot_help": "Em breve. Por enquanto, peça um reset ao seu admin."
+  },
+  "tabs": {
+    "home": "Início",
+    "leads": "Leads",
+    "schedule": "Agenda",
+    "profile": "Perfil"
+  },
+  "home": {
+    "welcome": "Bem-vindo, {{name}}",
+    "recent_leads": "Últimos Leads",
+    "empty": "Nenhum lead no momento",
+    "empty_title": "Sem leads por enquanto",
+    "empty_description": "Quando novos leads forem atribuídos a você, eles aparecem aqui.",
+    "error": "Falha ao carregar dados",
+    "error_title": "Sem conexão com o servidor",
+    "hero": {
+      "leads_label": "Leads",
+      "value_label": "Valor"
+    },
+    "see_all_with_count": "Ver todos os {{count}} leads"
+  },
+  "loading": {
+    "profile": "Carregando perfil"
+  },
+  "validation": {
+    "email_required": "Informe seu e-mail",
+    "email_invalid": "E-mail inválido",
+    "password_required": "Informe sua senha",
+    "password_too_short": "Senha precisa de pelo menos {{count}} caracteres",
+    "name_required": "Informe seu nome",
+    "name_short": "Nome muito curto",
+    "required": "Campo obrigatório"
+  },
+  "lead": {
+    "vin_label": "VIN",
+    "priority": "Prioridade",
+    "status": "Status",
+    "reason": "Motivo",
+    "expected_value": "Valor esperado",
+    "view_customer": "Ver cliente",
+    "call": "Ligar",
+    "message": "Enviar WhatsApp",
+    "section": {
+      "reason": "Por que este lead",
+      "value": "Pipeline esperado",
+      "customer": "Cliente",
+      "created": "Criado"
+    },
+    "actions": {
+      "call": "Ligar",
+      "message": "Mensagem",
+      "mark_contacted": "Marcar contato"
+    },
+    "not_found": "Lead não encontrado"
+  },
+  "leads": {
+    "title": "Leads",
+    "subtitle_count_zero": "Nenhum ativo",
+    "subtitle_count_one": "{{count}} ativo",
+    "subtitle_count_other": "{{count}} ativos",
+    "subtitle_showing": "Mostrando {{showing}} de {{total}}",
+    "search_placeholder": "Buscar por VIN ou motivo",
+    "filter": {
+      "all": "Todos",
+      "critical": "Críticos",
+      "today": "Hoje",
+      "forgotten": "Esquecidos"
+    },
+    "empty_search_title": "Nada encontrado",
+    "empty_search_description": "Sem leads para '{{query}}'. Tente VIN parcial ou outro filtro."
+  },
+  "segment": {
+    "fiel": "Fiel",
+    "abandono": "Abandono",
+    "esquecido": "Esquecido",
+    "economico": "Econômico"
+  },
+  "priority": {
+    "low": "Baixa",
+    "medium": "Média",
+    "high": "Alta",
+    "critical": "Crítica"
+  },
+  "status": {
+    "new": "Novo",
+    "assigned": "Atribuído",
+    "contacted": "Contatado",
+    "converted": "Convertido",
+    "lost": "Perdido",
+    "expired": "Expirado"
+  },
+  "profile": {
+    "sign_out": "Sair",
+    "greeting_fallback": "Bem-vindo",
+    "account": "Conta",
+    "appearance": "Aparência",
+    "dark_mode": "Modo escuro",
+    "light_mode": "Modo claro",
+    "theme_auto": "Seguindo o sistema",
+    "theme_manual": "Definido manualmente",
+    "follow_system": "Usar o do sistema",
+    "language": "Idioma",
+    "location": "Localização",
+    "photo": "Foto",
+    "change_photo": "Trocar foto",
+    "change_photo_hint": "Toque para alterar foto",
+    "camera": "Câmera",
+    "gallery": "Galeria",
+    "remove": "Remover",
+    "photo_updated": "Foto atualizada",
+    "photo_failed": "Não foi possível enviar a foto",
+    "photo_removed": "Foto removida",
+    "photo_remove_failed": "Não foi possível remover a foto"
+  },
+  "cta": {
+    "close": "Fechar",
+    "cancel": "Cancelar"
+  },
+  "time": {
+    "now": "agora",
+    "minutes_ago": "há {{count}} min",
+    "hours_ago": "há {{count}}h",
+    "days_ago": "há {{count}} dia",
+    "days_ago_plural": "há {{count}} dias"
+  }
+}

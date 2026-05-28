@@ -1,27 +1,30 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
+  - package-ecosystem: npm
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: weekly
+      day: monday
     open-pull-requests-limit: 5
-    versioning-strategy: increase
+    labels:
+      - dependencies
+      - npm
     commit-message:
-      prefix: "deps"
-      include: "scope"
-    ignore:
-      # Expo SDK requer migração coordenada — não atualizar automaticamente
-      - dependency-name: "expo"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "react-native"
-        update-types: ["version-update:semver-major"]
-
-  - package-ecosystem: "github-actions"
+      prefix: "chore(deps)"
+    groups:
+      expo:
+        patterns:
+          - "expo*"
+          - "react-native*"
+      dev-deps:
+        dependency-type: "development"
+  - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 3
+      interval: weekly
+      day: monday
+    labels:
+      - dependencies
+      - github-actions
     commit-message:
-      prefix: "ci"
+      prefix: "chore(actions)"
