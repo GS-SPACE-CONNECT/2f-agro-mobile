@@ -28,9 +28,9 @@
       "window_other": "próximos {{count}} dias",
       "window": "próximos {{count}} dias",
       "listen_button": "Ouvir alerta",
-      "no_alerts_label": "Status",
-      "no_alerts_title": "Tudo certo",
-      "no_alerts_subtitle": "Sem alertas hoje."
+      "no_alerts_kicker": "H O J E",
+      "no_alerts_body": "Tudo certo na sua roça hoje.",
+      "no_alerts_meta": "sem alertas"
     }
   },
   "lavouras": {
@@ -97,5 +97,12 @@
     "loading": "Carregando...",
     "cancel": "Cancelar",
     "save": "Salvar"
+  },
+  "time": {
+    "now": "agora",
+    "minutes_ago": "há {{count}} min",
+    "hours_ago": "há {{count}}h",
+    "days_ago": "ontem",
+    "days_ago_plural": "há {{count}} dias"
   }
 }

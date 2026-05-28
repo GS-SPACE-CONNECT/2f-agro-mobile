@@ -27,7 +27,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 
 import "@/i18n";
-import { IntroVideo } from "@/components/ui/IntroVideo";
 import { MeshBackground } from "@/components/ui/MeshBackground";
 import { LocaleProvider } from "@/context/LocaleContext";
 import { NavigationThemeBridge, ThemeProvider, useTheme } from "@/context/ThemeContext";
@@ -52,7 +51,6 @@ export default function RootLayout() {
 
 function RootStack() {
   const { colors, mode, isHydrated: themeHydrated } = useTheme();
-  const [introDone, setIntroDone] = useState(false);
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
 
@@ -83,15 +81,13 @@ function RootStack() {
     };
   }, []);
 
-  useGuardedRedirect(ready && introDone && themeHydrated, session);
+  useGuardedRedirect(ready && themeHydrated, session);
 
   return (
     <View style={[styles.root, { backgroundColor: colors.bg }]}>
       <StatusBar style={mode === "dark" ? "light" : "dark"} />
       <MeshBackground />
-      {!introDone ? (
-        <IntroVideo onFinished={() => setIntroDone(true)} />
-      ) : !ready || !themeHydrated || !fontsLoaded ? null : (
+      {!ready || !themeHydrated || !fontsLoaded ? null : (
         <Stack
           screenOptions={{
             headerStyle: { backgroundColor: "transparent" },

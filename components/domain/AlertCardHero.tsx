@@ -1,8 +1,12 @@
-// AlertCardHero — substitui o HeroStatsBlock na Home. Mesmo footprint
-// (180x202, paddingX 2xl, paddingY lg, radius 20, bg heroVerticalBg).
-// Mostra alerta critico ativo com botao de ouvir (TTS, Sprint 2). Quando
-// nao ha alerta, mostra estado positivo "tudo certo".
-// Card hero do alerta: tipo + severidade + probabilidade + recomendacao + TTS.
+// AlertCardHero — composicao editorial minimalista pra slot esquerdo da home,
+// adjacente ao globo. Sem chrome de card pesado: bg fantasma, sem border, sem
+// divider. Hierarquia tipografica leva a leitura:
+//   1. Probabilidade gigante (Playfair 60) na cor da severidade
+//   2. Tipo do alerta caps espacado (Playfair Italic 16, letterSpacing 4)
+//   3. Acento horizontal sutil (24px linha)
+//   4. Recomendacao em Playfair Italic
+//   5. Metadata (severidade + janela) em Manrope Light caps
+// Numero hero + acento serif + meta caps = estetica editorial premium.
 
 import { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -16,7 +20,6 @@ import {
   alertaSeveridadePalette,
   fontFamily,
   spacing,
-  typography,
   type ThemeColors,
 } from "@/lib/theme";
 
@@ -31,8 +34,6 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
   const { colors } = useTheme();
   const styles = createStyles(colors);
 
-  // Sprint 1: TTS plena vira no Sprint 2 (expo-speech). Por ora dispara
-  // haptic — botao ja existe, comportamento melhora sem refactor.
   const handleListen = useCallback(() => {
     if (!alerta) return;
     haptic.light();
@@ -45,55 +46,60 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
     onPress?.(alerta);
   }, [alerta, onPress]);
 
-  // Estado vazio: tudo certo
+  // Estado vazio — composicao identica, mas com sucesso como heroi.
   if (!alerta) {
     return (
       <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <Text style={styles.tipo}>OK</Text>
-          <Ionicons name="checkmark-circle" size={20} color={colors.success} />
-        </View>
-        <View style={styles.divider} />
-        <Text style={styles.probLabel}>{t("home.alert.no_alerts_label")}</Text>
-        <Text style={styles.probValueOk}>{t("home.alert.no_alerts_title")}</Text>
-        <Text style={styles.window}>{t("home.alert.no_alerts_subtitle")}</Text>
+        <Text style={[styles.hero, { color: colors.success }]}>OK</Text>
+        <Text style={styles.kicker}>{t("home.alert.no_alerts_kicker")}</Text>
+        <View style={[styles.accent, { backgroundColor: colors.success }]} />
+        <Text style={styles.body}>{t("home.alert.no_alerts_body")}</Text>
+        <Text style={styles.meta}>{t("home.alert.no_alerts_meta")}</Text>
       </View>
     );
   }
 
   const palette = alertaSeveridadePalette[alerta.severidade];
   const probPct = Math.round(alerta.probabilidade * 100);
+  const severidadeLabel = t(palette.labelKey);
 
   return (
     <Pressable onPress={handlePress} disabled={!onPress}>
-      <View style={[styles.container, { borderColor: palette.border }]}>
-        <View style={styles.headerRow}>
-          <Text style={[styles.tipo, { color: palette.color }]} numberOfLines={1}>
-            {alerta.tipoLabel}
-          </Text>
-          <Pressable
-            onPress={handleListen}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t("home.alert.listen_button")}
-            style={({ pressed }) => [styles.listenBtn, pressed && { opacity: 0.6 }]}
-          >
-            <Ionicons name="volume-high" size={18} color={colors.text} />
-          </Pressable>
-        </View>
+      <View style={styles.container}>
+        {/* TTS ghost button, top-right, sem chrome */}
+        <Pressable
+          onPress={handleListen}
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel={t("home.alert.listen_button")}
+          style={({ pressed }) => [styles.listenBtn, pressed && { opacity: 0.5 }]}
+        >
+          <Ionicons name="volume-medium-outline" size={16} color={colors.textMuted} />
+        </Pressable>
 
-        <View style={styles.divider} />
-
-        <Text style={styles.probLabel}>{t("home.alert.probability_label")}</Text>
-        <Text style={styles.probValue} numberOfLines={1}>
-          {t(palette.labelKey).toUpperCase()} ({probPct}%)
-        </Text>
-        <Text style={styles.window}>
-          {t("home.alert.window", { count: alerta.janelaDias })}
+        {/* Hero: numero gigante serif na cor da severidade */}
+        <Text style={[styles.hero, { color: palette.color }]} numberOfLines={1}>
+          {probPct}
+          <Text style={styles.heroSuffix}>%</Text>
         </Text>
 
-        <Text style={styles.recomendacao} numberOfLines={3}>
+        {/* Kicker: tipo do alerta em caps com letterspacing editorial */}
+        <Text style={styles.kicker} numberOfLines={1}>
+          {alerta.tipoLabel.split("").join(" ")}
+        </Text>
+
+        {/* Acento horizontal — 24px, cor da severidade, sem opacity */}
+        <View style={[styles.accent, { backgroundColor: palette.color }]} />
+
+        {/* Recomendacao em Playfair Italic, max 3 linhas, lineHeight generoso */}
+        <Text style={styles.body} numberOfLines={3}>
           {alerta.recomendacao}
+        </Text>
+
+        {/* Metadata: severidade + janela, italic minusculo Manrope */}
+        <Text style={styles.meta} numberOfLines={1}>
+          {severidadeLabel.toLowerCase()} ·{" "}
+          {t("home.alert.window", { count: alerta.janelaDias })}
         </Text>
       </View>
     </Pressable>
@@ -105,75 +111,60 @@ function createStyles(c: ThemeColors) {
     container: {
       width: 180,
       minHeight: 202,
-      backgroundColor: c.heroVerticalBg,
-      borderColor: c.heroVerticalBorder,
-      borderWidth: 1,
-      borderRadius: 20,
-      paddingHorizontal: spacing["2xl"],
-      paddingVertical: spacing.lg,
-    },
-    headerRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    tipo: {
-      fontFamily: fontFamily.displayItalic,
-      fontSize: 18,
-      lineHeight: 22,
-      letterSpacing: -0.6,
-      color: c.text,
-      flexShrink: 1,
+      // bg fantasma — apenas pra texturar levemente sobre o gradient.
+      // Sem border, sem radius pesado, sem padding excessivo.
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.xl,
+      paddingBottom: spacing.lg,
     },
     listenBtn: {
-      width: 28,
-      height: 28,
+      position: "absolute",
+      top: spacing.sm,
+      right: spacing.sm,
+      width: 24,
+      height: 24,
       alignItems: "center",
       justifyContent: "center",
-      borderRadius: 14,
     },
-    divider: {
-      height: StyleSheet.hairlineWidth,
-      backgroundColor: c.text,
-      opacity: 0.18,
-      marginVertical: spacing.sm,
+    hero: {
+      fontFamily: fontFamily.displayRegular,
+      fontSize: 64,
+      lineHeight: 64,
+      letterSpacing: -3,
     },
-    probLabel: {
-      ...typography.label,
-      fontFamily: fontFamily.semibold,
-      fontSize: 9,
-      letterSpacing: 1,
-      textTransform: "uppercase",
-      color: c.textMuted,
+    heroSuffix: {
+      fontFamily: fontFamily.displayRegular,
+      fontSize: 24,
+      letterSpacing: -1,
     },
-    probValue: {
-      fontFamily: fontFamily.bold,
-      fontSize: 16,
-      letterSpacing: -0.4,
-      color: c.text,
-      marginTop: 2,
-    },
-    probValueOk: {
-      fontFamily: fontFamily.displaySemibold,
-      fontSize: 18,
-      letterSpacing: -0.6,
-      color: c.text,
-      marginTop: 2,
-    },
-    window: {
-      fontFamily: fontFamily.light,
-      fontSize: 11,
-      letterSpacing: -0.2,
-      color: c.textMuted,
-      marginTop: 4,
-    },
-    recomendacao: {
+    kicker: {
       fontFamily: fontFamily.displayItalic,
       fontSize: 13,
-      lineHeight: 18,
-      letterSpacing: -0.3,
+      letterSpacing: 3,
       color: c.text,
+      marginTop: spacing.xs,
+      textTransform: "uppercase",
+    },
+    accent: {
+      width: 24,
+      height: 1,
       marginTop: spacing.md,
+      marginBottom: spacing.md,
+    },
+    body: {
+      fontFamily: fontFamily.displayItalic,
+      fontSize: 14,
+      lineHeight: 19,
+      letterSpacing: -0.2,
+      color: c.text,
+    },
+    meta: {
+      fontFamily: fontFamily.light,
+      fontSize: 10,
+      letterSpacing: 0.5,
+      color: c.textMuted,
+      marginTop: spacing.md,
+      textTransform: "uppercase",
     },
   });
 }
