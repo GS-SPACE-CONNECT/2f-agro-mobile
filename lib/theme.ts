@@ -58,12 +58,6 @@ export type ThemeColors = {
   bottomBarBg: string;
 };
 
-// Ford Blue is the brand mark. Used ONLY on the FORD wordmark + logo glyph.
-// Never on CTAs, switches, tabs, or any interactive surface.
-// Azul Ford apenas no wordmark/logo. Nunca em UI interativa.
-export const FORD_BLUE = "#003478";
-export const FORD_BLUE_DEEP = "#002356";
-
 export const palette: Record<ThemeMode, ThemeColors> = {
   light: {
     bg: "#FAFAFA",
@@ -434,13 +428,11 @@ export const typography = {
 
 // Status palette: estados de lead (mapeia 1:1 com api Lead.status).
 // Domain-specific, mas tema-agnostic — cores funcionam em light e dark.
-export type LeadStatusKey =
-  | "new"
-  | "assigned"
-  | "contacted"
-  | "converted"
-  | "lost"
-  | "expired";
+export type AlertaStatusKey =
+  | "novo"
+  | "visto"
+  | "resolvido"
+  | "expirado";
 
 export type StatusPaletteEntry = {
   labelKey: string;
@@ -449,105 +441,93 @@ export type StatusPaletteEntry = {
   border: string;
 };
 
-export const leadStatusPalette: Record<LeadStatusKey, StatusPaletteEntry> = {
-  new: {
-    labelKey: "status.new",
+export const alertaStatusPalette: Record<AlertaStatusKey, StatusPaletteEntry> = {
+  novo: {
+    labelKey: "alerta.status.novo",
     color: "#5B8DEF",
     bg: "rgba(91, 141, 239, 0.14)",
     border: "rgba(91, 141, 239, 0.40)",
   },
-  assigned: {
-    labelKey: "status.assigned",
+  visto: {
+    labelKey: "alerta.status.visto",
     color: "#A855F7",
     bg: "rgba(168, 85, 247, 0.14)",
     border: "rgba(168, 85, 247, 0.40)",
   },
-  contacted: {
-    labelKey: "status.contacted",
-    color: "#F59E0B",
-    bg: "rgba(245, 158, 11, 0.14)",
-    border: "rgba(245, 158, 11, 0.40)",
-  },
-  converted: {
-    labelKey: "status.converted",
+  resolvido: {
+    labelKey: "alerta.status.resolvido",
     color: "#10B981",
     bg: "rgba(16, 185, 129, 0.16)",
     border: "rgba(16, 185, 129, 0.45)",
   },
-  lost: {
-    labelKey: "status.lost",
-    color: "#6B7280",
-    bg: "rgba(107, 114, 128, 0.14)",
-    border: "rgba(107, 114, 128, 0.35)",
-  },
-  expired: {
-    labelKey: "status.expired",
+  expirado: {
+    labelKey: "alerta.status.expirado",
     color: "#9CA3AF",
     bg: "rgba(156, 163, 175, 0.12)",
     border: "rgba(156, 163, 175, 0.30)",
   },
 };
 
-export type LeadPriorityKey = "low" | "medium" | "high" | "critical";
+export type AlertaSeveridadeKey = "baixo" | "medio" | "alto" | "critico";
 
-export const leadPriorityPalette: Record<LeadPriorityKey, StatusPaletteEntry> = {
-  low: {
-    labelKey: "priority.low",
+// Escala de urgencia cinza -> amarelo -> laranja -> vermelho.
+// Acessivel: emoji/badge separados acompanham a cor (daltonismo).
+export const alertaSeveridadePalette: Record<AlertaSeveridadeKey, StatusPaletteEntry> = {
+  baixo: {
+    labelKey: "alerta.severidade.baixo",
     color: "#6B7280",
     bg: "rgba(107, 114, 128, 0.12)",
     border: "rgba(107, 114, 128, 0.30)",
   },
-  medium: {
-    // amarelo-mostarda — "atenção" no meio da escala de urgência.
-    // Antes era amber #F59E0B (próximo demais do laranja de high).
-    labelKey: "priority.medium",
+  medio: {
+    labelKey: "alerta.severidade.medio",
     color: "#EAB308",
     bg: "rgba(234, 179, 8, 0.14)",
     border: "rgba(234, 179, 8, 0.40)",
   },
-  high: {
-    // laranja vivo — convenção universal cinza→amarelo→laranja→vermelho
-    // dá escala visual de urgência. Antes era azul #5B8DEF, que não
-    // comunica "alta prioridade" — sugeria info/calmo no meio do funil.
-    labelKey: "priority.high",
+  alto: {
+    labelKey: "alerta.severidade.alto",
     color: "#F97316",
     bg: "rgba(249, 115, 22, 0.16)",
     border: "rgba(249, 115, 22, 0.45)",
   },
-  critical: {
-    labelKey: "priority.critical",
+  critico: {
+    labelKey: "alerta.severidade.critico",
     color: "#FF453A",
     bg: "rgba(255, 69, 58, 0.16)",
     border: "rgba(255, 69, 58, 0.50)",
   },
 };
 
-export type ChurnSegmentKey = "fiel" | "abandono" | "esquecido" | "economico";
+export type LavouraSaudeKey = "saudavel" | "atencao" | "risco" | "perdida";
 
-export const churnSegmentPalette: Record<ChurnSegmentKey, StatusPaletteEntry> = {
-  fiel: {
-    labelKey: "segment.fiel",
+// Verde -> amarelo -> laranja -> cinza (perdida) — mesma escala de urgencia
+// que a severidade, mas com cinza no final pq "perdida" e estado terminal,
+// nao critico-em-curso.
+export const lavouraSaudePalette: Record<LavouraSaudeKey, StatusPaletteEntry> = {
+  saudavel: {
+    labelKey: "lavoura.saude.saudavel",
     color: "#10B981",
     bg: "rgba(16, 185, 129, 0.14)",
     border: "rgba(16, 185, 129, 0.40)",
   },
-  abandono: {
-    labelKey: "segment.abandono",
-    color: "#FF453A",
-    bg: "rgba(255, 69, 58, 0.14)",
-    border: "rgba(255, 69, 58, 0.40)",
+  atencao: {
+    labelKey: "lavoura.saude.atencao",
+    color: "#EAB308",
+    bg: "rgba(234, 179, 8, 0.14)",
+    border: "rgba(234, 179, 8, 0.40)",
   },
-  esquecido: {
-    labelKey: "segment.esquecido",
-    color: "#F59E0B",
-    bg: "rgba(245, 158, 11, 0.14)",
-    border: "rgba(245, 158, 11, 0.40)",
+  risco: {
+    labelKey: "lavoura.saude.risco",
+    color: "#F97316",
+    bg: "rgba(249, 115, 22, 0.16)",
+    border: "rgba(249, 115, 22, 0.45)",
   },
-  economico: {
-    labelKey: "segment.economico",
-    color: "#A855F7",
-    bg: "rgba(168, 85, 247, 0.14)",
-    border: "rgba(168, 85, 247, 0.40)",
+  perdida: {
+    labelKey: "lavoura.saude.perdida",
+    color: "#9CA3AF",
+    bg: "rgba(156, 163, 175, 0.14)",
+    border: "rgba(156, 163, 175, 0.35)",
   },
 };
 
