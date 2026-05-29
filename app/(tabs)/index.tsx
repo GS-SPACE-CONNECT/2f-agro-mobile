@@ -65,12 +65,12 @@ const HeroDecoration = memo(function HeroDecoration({
 }) {
   return (
     <>
-      <View style={decorationStyles.clockWrap} pointerEvents="none">
-        <RotatingClock />
-      </View>
       {/* Globo aceita drag horizontal pra girar — sem pointerEvents:none. */}
       <View style={decorationStyles.globeWrap}>
-        <Globe size={300} markerLat={markerLat} markerLng={markerLng} />
+        <Globe size={320} markerLat={markerLat} markerLng={markerLng} />
+      </View>
+      <View style={decorationStyles.clockWrap} pointerEvents="none">
+        <RotatingClock />
       </View>
     </>
   );
@@ -223,20 +223,27 @@ export default function HomeScreen() {
 }
 
 const decorationStyles = StyleSheet.create({
-  // Clock alto, encaixa proximo ao greeting (top-right). Greeting maxWidth
-  // limita pra eles nao colidirem horizontalmente.
+  // Clock posicionado dentro da area do globo (overlap proposital).
+  // zIndex 0 + elevation 0: clock fica ATRAS do globo. Necessario
+  // explicitar pq Globe.dom (WebView/canvas) tem compositor proprio
+  // em algumas plataformas e nao respeita render-order natural.
   clockWrap: {
     position: "absolute",
-    right: -25,
-    top: 140,
+    right: -30,
+    top: 450,
+    zIndex: 0,
+    elevation: 0,
   },
-  // Globe logo abaixo do clock, com bleed direita (~half off-screen).
+  // Globo com bleed direita (~half off-screen). zIndex/elevation altos
+  // garantem que o globo cubra o clock no overlap em todas as plataformas.
   globeWrap: {
     position: "absolute",
-    right: -130,
+    right: -110,
     top: 175,
     width: 300,
     height: 300,
+    zIndex: 2,
+    elevation: 2,
   },
 });
 

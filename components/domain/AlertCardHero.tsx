@@ -62,7 +62,7 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
   // Cor do hero "78%": branco em dark / preto em light, ambos translucidos.
   // Independe da severidade — quem carrega a cor da urgencia eh o kicker
   // + acento. Mantem o numero como elemento neutro/etereo.
-  const heroColor = hexToRgba(colors.text, 0.35);
+  const heroColor = hexToRgba(colors.text, 0.8);
 
   if (!alerta) {
     return (
