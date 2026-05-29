@@ -23,6 +23,19 @@ import {
   type ThemeColors,
 } from "@/lib/theme";
 
+/**
+ * Converte hex (#RRGGBB) pra rgba com alpha. Usado pra deixar
+ * o numero hero translucido (white em dark, black em light) sem
+ * depender de opacity prop que falha em alguns paths do RN web.
+ */
+function hexToRgba(hex: string, alpha: number): string {
+  const clean = hex.startsWith("#") ? hex.slice(1) : hex;
+  const r = parseInt(clean.slice(0, 2), 16);
+  const g = parseInt(clean.slice(2, 4), 16);
+  const b = parseInt(clean.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export interface AlertCardHeroProps {
   alerta: Alerta | null;
   onListen?: (alerta: Alerta) => void;
@@ -46,10 +59,15 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
     onPress?.(alerta);
   }, [alerta, onPress]);
 
+  // Cor do hero "78%": branco em dark / preto em light, ambos translucidos.
+  // Independe da severidade — quem carrega a cor da urgencia eh o kicker
+  // + acento. Mantem o numero como elemento neutro/etereo.
+  const heroColor = hexToRgba(colors.text, 0.35);
+
   if (!alerta) {
     return (
       <View style={styles.container}>
-        <Text style={[styles.hero, { color: colors.success }]}>OK</Text>
+        <Text style={[styles.hero, { color: heroColor }]}>OK</Text>
         <Text style={[styles.kicker, { color: colors.success }]}>
           {t("home.alert.no_alerts_kicker")}
         </Text>
@@ -78,12 +96,14 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
           <Ionicons name="volume-medium-outline" size={14} color={colors.textMuted} />
         </Pressable>
 
-        <Text style={[styles.hero, { color: palette.color }]} numberOfLines={1}>
+        <Text style={[styles.hero, { color: heroColor }]} numberOfLines={1}>
           {probPct}
-          <Text style={[styles.heroSuffix, { color: palette.color }]}>%</Text>
+          <Text style={[styles.heroSuffix, { color: heroColor }]}>%</Text>
         </Text>
 
-        <Text style={[styles.kicker, { color: palette.color }]} numberOfLines={1}>
+        {/* Kicker neutro (cor do tema) — quem leva a cor da urgencia eh
+            apenas o acento (linha 24px) abaixo. */}
+        <Text style={styles.kicker} numberOfLines={1}>
           {alerta.tipoLabel}
         </Text>
 
@@ -104,9 +124,12 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
 function createStyles(c: ThemeColors) {
   return StyleSheet.create({
     container: {
-      width: 220,
+      width: 260,
       minHeight: 280,
-      paddingHorizontal: spacing.lg,
+      // paddingLeft 30 = mesma indentacao do greeting (SECTION_HORIZONTAL_PADDING
+      // no index.tsx). Conteudo do alert alinha verticalmente com "Bom dia,".
+      paddingLeft: 30,
+      paddingRight: spacing.lg,
       paddingTop: spacing["2xl"],
       paddingBottom: spacing.lg,
     },
@@ -124,9 +147,8 @@ function createStyles(c: ThemeColors) {
       fontSize: 100,
       lineHeight: 100,
       letterSpacing: -5,
-      // Translucido pra dar peso editorial sem dominar — ghost numerals
-      // (Vercel/Stripe pricing style). Visivel mas etereo sobre o gradient.
-      opacity: 0.6,
+      // Translucencia feita via rgba na cor (mais confiavel que opacity
+      // prop em alguns paths do RN web). Cor calculada inline acima.
     },
     heroSuffix: {
       fontFamily: fontFamily.medium,
@@ -139,6 +161,7 @@ function createStyles(c: ThemeColors) {
       letterSpacing: 4,
       marginTop: spacing.xs,
       textTransform: "uppercase",
+      color: c.text,
     },
     accent: {
       width: 24,

@@ -43,7 +43,7 @@ import { fontFamily, radius, spacing, typography, type ThemeColors } from "@/lib
 const TOP_VISIBLE = 6;
 const LIST_HORIZONTAL_PADDING = 0; // rows ja tem padding interno
 const SECTION_HORIZONTAL_PADDING = 30;
-const HERO_AREA_HEIGHT = 560;
+const HERO_AREA_HEIGHT = 490;
 
 const Greeting = memo(function Greeting({ fullName }: { fullName: string }) {
   const { colors } = useTheme();
@@ -222,19 +222,18 @@ export default function HomeScreen() {
 }
 
 const decorationStyles = StyleSheet.create({
-  // Clock posicionado bem abaixo do greeting (greeting wrap 2 linhas ~135px)
-  // pra nunca encostar em "Joao da Silva".
+  // Clock alto, encaixa proximo ao greeting (top-right). Greeting maxWidth
+  // limita pra eles nao colidirem horizontalmente.
   clockWrap: {
     position: "absolute",
-    right: -20,
-    top: 200,
+    right: -25,
+    top: 140,
   },
-  // Globe posicionado abaixo do clock, com bleed direita (~half off-screen).
-  // Tamanho 300 (era 324) pra reduzir competicao visual com o AlertCardHero.
+  // Globe logo abaixo do clock, com bleed direita (~half off-screen).
   globeWrap: {
     position: "absolute",
     right: -130,
-    top: 240,
+    top: 175,
     width: 300,
     height: 300,
   },
@@ -250,8 +249,8 @@ function createStyles(c: ThemeColors) {
     },
     alertWrap: {
       position: "absolute",
-      left: -10,
-      top: 250,
+      left: 0,
+      top: 190,
     },
     sectionTitle: {
       ...typography.hSectionItalic,

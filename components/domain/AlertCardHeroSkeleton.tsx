@@ -24,9 +24,10 @@ export function AlertCardHeroSkeleton() {
 
 const styles = StyleSheet.create({
   container: {
-    width: 220,
+    width: 260,
     minHeight: 280,
-    paddingHorizontal: spacing.lg,
+    paddingLeft: 30,
+    paddingRight: spacing.lg,
     paddingTop: spacing["2xl"],
     paddingBottom: spacing.lg,
   },

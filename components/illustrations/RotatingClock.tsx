@@ -49,8 +49,13 @@ function RotatingClockComponent() {
       maskElement={
         <View style={styles.maskInner}>
           {/* Cor do texto = cor final do gradient. Quando MaskedView nao
-              aplica (web fallback), a cor visivel ainda fica theme-aware. */}
-          <Text style={[styles.text, { color: colors.clockGradientTo }]}>
+              aplica (web fallback), a cor visivel ainda fica theme-aware.
+              numberOfLines=1 garante que digitos como "22:48" nunca quebrem. */}
+          <Text
+            style={[styles.text, { color: colors.clockGradientTo }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
             {value}
           </Text>
         </View>
@@ -70,7 +75,9 @@ export const RotatingClock = memo(RotatingClockComponent);
 
 const styles = StyleSheet.create({
   container: {
-    width: 184,
+    // 220 com folga generosa pra "HH:MM" a 80pt Manrope letterSpacing -4
+    // nao quebrar em valores como "22:48" / "10:50".
+    width: 220,
     height: 90,
   },
   maskInner: {
