@@ -98,8 +98,10 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
           {alerta.tipoLabel}
         </Text>
 
-        {/* Divider horizontal na cor da severidade, entre kicker e body. */}
-        <View style={[styles.divider, { backgroundColor: palette.color }]} />
+        {/* Divider horizontal neutro (cor do tema) — branco em dark,
+            preto em light. Sem laranja: composicao 100% sem cor de
+            severidade no card. */}
+        <View style={[styles.divider, { backgroundColor: colors.text }]} />
 
         <Text style={styles.body} numberOfLines={3}>
           {alerta.recomendacao}
