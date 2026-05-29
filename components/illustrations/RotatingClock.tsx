@@ -10,7 +10,7 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { useTheme } from "@/context/ThemeContext";
-import { typography } from "@/lib/theme";
+import { fontFamily, typography } from "@/lib/theme";
 
 function pad(n: number) {
   return n < 10 ? `0${n}` : String(n);
@@ -84,10 +84,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "transparent",
   },
-  // Clock hero size — usa typography.clockHero (Manrope Regular 80) com
-  // letterSpacing reforcado pra dar peso visual editorial.
+  // Clock hero — Manrope Bold 80pt. Sobrescreve typography.clockHero (que
+  // era regular) pra dar peso editorial maior. letterSpacing -4 mantem
+  // a compactacao dos digitos.
   text: {
     ...typography.clockHero,
+    fontFamily: fontFamily.medium,
     fontSize: 80,
     lineHeight: 80,
     letterSpacing: -4,

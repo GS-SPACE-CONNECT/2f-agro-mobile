@@ -86,15 +86,6 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
   return (
     <Pressable onPress={handlePress} disabled={!onPress}>
       <View style={styles.container}>
-        <Pressable
-          onPress={handleListen}
-          hitSlop={10}
-          accessibilityRole="button"
-          accessibilityLabel={t("home.alert.listen_button")}
-          style={({ pressed }) => [styles.listenBtn, pressed && { opacity: 0.5 }]}
-        >
-          <Ionicons name="volume-medium-outline" size={14} color={colors.textMuted} />
-        </Pressable>
 
         <Text style={[styles.hero, { color: heroColor }]} numberOfLines={1}>
           {probPct}
@@ -107,7 +98,7 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
           {alerta.tipoLabel}
         </Text>
 
-        <View style={[styles.accent, { backgroundColor: palette.color }]} />
+        <View style={[styles.kicker, { backgroundColor: palette.color }]} />
 
         <Text style={styles.body} numberOfLines={3}>
           {alerta.recomendacao}
@@ -133,19 +124,13 @@ function createStyles(c: ThemeColors) {
       paddingTop: spacing["2xl"],
       paddingBottom: spacing.lg,
     },
-    listenBtn: {
-      position: "absolute",
-      top: spacing.md,
-      right: spacing.md,
-      width: 22,
-      height: 22,
-      alignItems: "center",
-      justifyContent: "center",
-    },
     hero: {
       fontFamily: fontFamily.medium,
       fontSize: 100,
-      lineHeight: 100,
+      // lineHeight 88 (mais apertado q fontSize) puxa o conteudo de baixo
+      // pra perto do numero. "78" tem altura visual ~75px, lineHeight 88
+      // mantem respiro minimo sem o "vazio fantasma" do bounding box 100.
+      lineHeight: 88,
       letterSpacing: -5,
       // Translucencia feita via rgba na cor (mais confiavel que opacity
       // prop em alguns paths do RN web). Cor calculada inline acima.
@@ -155,13 +140,14 @@ function createStyles(c: ThemeColors) {
       fontSize: 36,
       letterSpacing: -1.5,
     },
+    // Kicker virou divider horizontal — linha 40x1 na cor da severidade,
+    // entre "78%" e o texto do recomendacao. Substitui a funcao do antigo
+    // accent (que ficou apenas no estado no_alerts).
     kicker: {
-      fontFamily: fontFamily.semibold,
-      fontSize: 11,
-      letterSpacing: 4,
-      marginTop: spacing.xs,
-      textTransform: "uppercase",
-      color: c.text,
+      width: 40,
+      height: 1,
+      marginTop: spacing.md,
+      marginBottom: spacing.md,
     },
     accent: {
       width: 24,
@@ -175,6 +161,7 @@ function createStyles(c: ThemeColors) {
       lineHeight: 19,
       letterSpacing: -0.1,
       color: c.text,
+      paddingRight: 30, // evita colidir com o listenBtn (quando presente)
     },
     meta: {
       fontFamily: fontFamily.light,
