@@ -92,13 +92,14 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
           <Text style={[styles.heroSuffix, { color: heroColor }]}>%</Text>
         </Text>
 
-        {/* Kicker neutro (cor do tema) — quem leva a cor da urgencia eh
-            apenas o acento (linha 24px) abaixo. */}
+        {/* Kicker "SECA" em cor neutra (cor do tema) com letterSpacing
+            editorial. Quem leva a cor da urgencia eh apenas o divider abaixo. */}
         <Text style={styles.kicker} numberOfLines={1}>
           {alerta.tipoLabel}
         </Text>
 
-        <View style={[styles.kicker, { backgroundColor: palette.color }]} />
+        {/* Divider horizontal na cor da severidade, entre kicker e body. */}
+        <View style={[styles.divider, { backgroundColor: palette.color }]} />
 
         <Text style={styles.body} numberOfLines={3}>
           {alerta.recomendacao}
@@ -140,15 +141,25 @@ function createStyles(c: ThemeColors) {
       fontSize: 36,
       letterSpacing: -1.5,
     },
-    // Kicker virou divider horizontal — linha 40x1 na cor da severidade,
-    // entre "78%" e o texto do recomendacao. Substitui a funcao do antigo
-    // accent (que ficou apenas no estado no_alerts).
+    // Kicker = text "SECA" caps + letterSpacing editorial. Cor do tema
+    // (neutra) — quem leva a cor da urgencia eh o divider abaixo.
     kicker: {
-      width: 40,
+      fontFamily: fontFamily.semibold,
+      fontSize: 11,
+      letterSpacing: 4,
+      marginTop: spacing.xs,
+      textTransform: "uppercase",
+      color: c.text,
+    },
+    // Divider horizontal entre kicker e body — linha 160x1 na cor da
+    // severidade. Substitui o accent antigo no caminho com alerta.
+    divider: {
+      width: 160,
       height: 1,
       marginTop: spacing.md,
       marginBottom: spacing.md,
     },
+    // Accent — linha curta 24x1, ainda usada apenas no estado vazio (no_alerts).
     accent: {
       width: 24,
       height: 1,

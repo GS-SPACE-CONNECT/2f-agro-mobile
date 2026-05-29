@@ -68,7 +68,8 @@ const HeroDecoration = memo(function HeroDecoration({
       <View style={decorationStyles.clockWrap} pointerEvents="none">
         <RotatingClock />
       </View>
-      <View style={decorationStyles.globeWrap} pointerEvents="none">
+      {/* Globo aceita drag horizontal pra girar — sem pointerEvents:none. */}
+      <View style={decorationStyles.globeWrap}>
         <Globe size={300} markerLat={markerLat} markerLng={markerLng} />
       </View>
     </>

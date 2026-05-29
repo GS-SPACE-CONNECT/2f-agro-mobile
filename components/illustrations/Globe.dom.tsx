@@ -1,8 +1,11 @@
 // Globe.dom.tsx — Expo DOM Component que renderiza o globo pontilhado
 // estilo MagicUI (cobe.js + WebGL). Diretiva 'use dom' empacota como
-// webview transparente nativa (Expo 50+). Estatico inclinado, sem
-// rotacao, com markers nas capitais brasileiras.
-// Spec: docs/superpowers/specs/2026-05-25-mobile-dashboard-redesign-design.md
+// webview transparente nativa (Expo 50+).
+//
+// Interativo: drag horizontal (touch ou mouse) rotaciona o globo no eixo
+// phi. Theta (inclinacao N-S) fica fixo. Marker laranja apontado pra
+// coordenadas do usuario (default Sao Paulo).
+// Globo 3D draggable: drag horizontal gira no eixo phi.
 
 "use dom";
 
@@ -17,16 +20,25 @@ export interface GlobeProps {
   markerLng?: number;
 }
 
-// Globe propositadamente theme-agnostic: esfera escura com continentes
-// brancos funciona visualmente em ambos os temas (light e dark) e EVITA
-// o problema de recriar o globo no theme toggle (DOM Components piscam
-// quando re-montam — globo "sumia" ao alternar tema).
+const INITIAL_PHI = 5.5;
+const INITIAL_THETA = 0.3;
+const DRAG_SENSITIVITY = 200;
+
 export default function Globe({
   size = 324,
   markerLat = -23.55,
   markerLng = -46.63,
 }: GlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Phi acumulado entre dragdrag: state.phi = phi + activeMovement.
+  // Mantemos em refs pra mutar dentro do onRender sem re-render.
+  const phiRef = useRef(INITIAL_PHI);
+  // Posicao inicial do clientX no inicio do drag. null = nao dragging.
+  const pointerStartRef = useRef<number | null>(null);
+  // Movimento ativo durante o drag (delta clientX / sensitivity).
+  // Quando o drag termina, este valor eh acumulado em phiRef.
+  const activeMovementRef = useRef(0);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -35,10 +47,8 @@ export default function Globe({
       width: size * 2,
       height: size * 2,
       // Pose centralizando America do Sul (Brasil ao centro).
-      // phi 5.5 traz longitude -60 (centro do Brasil) pra face visivel.
-      // theta 0.3 = leve inclinacao N-S pra equilibrar hemisferios.
-      phi: 5.5,
-      theta: 0.3,
+      phi: INITIAL_PHI,
+      theta: INITIAL_THETA,
       dark: 1,
       diffuse: 1.2,
       mapSamples: 16000,
@@ -49,10 +59,11 @@ export default function Globe({
       markers: [
         { location: [markerLat, markerLng] as [number, number], size: 0.07 },
       ],
-      // onRender mantem o render loop ativo. Estatico: nao incrementa phi.
+      // onRender lê de refs — phi atual = base + movimento ativo do drag.
+      // Theta fixo (sem rotacao vertical).
       onRender: (state) => {
-        state.phi = 5.5;
-        state.theta = 0.3;
+        state.phi = phiRef.current + activeMovementRef.current;
+        state.theta = INITIAL_THETA;
       },
     });
     return () => {
@@ -60,14 +71,45 @@ export default function Globe({
     };
   }, [size, markerLat, markerLng]);
 
+  // Handlers de drag horizontal:
+  // - pointerdown: marca o ponto inicial e muda cursor pra "grabbing".
+  // - pointermove: calcula delta clientX / sensitivity, atualiza ref.
+  // - pointerup/leave: commita o movimento em phiRef, reseta active.
+  const handlePointerDown = (clientX: number) => {
+    pointerStartRef.current = clientX;
+    if (canvasRef.current) canvasRef.current.style.cursor = "grabbing";
+  };
+
+  const handlePointerMove = (clientX: number) => {
+    if (pointerStartRef.current === null) return;
+    const delta = clientX - pointerStartRef.current;
+    activeMovementRef.current = delta / DRAG_SENSITIVITY;
+  };
+
+  const handlePointerEnd = () => {
+    if (pointerStartRef.current === null) return;
+    // Commit do movimento ativo em phiRef pra proximo drag comecar daqui.
+    phiRef.current += activeMovementRef.current;
+    activeMovementRef.current = 0;
+    pointerStartRef.current = null;
+    if (canvasRef.current) canvasRef.current.style.cursor = "grab";
+  };
+
   return (
     <canvas
       ref={canvasRef}
+      onPointerDown={(e) => handlePointerDown(e.clientX)}
+      onPointerMove={(e) => handlePointerMove(e.clientX)}
+      onPointerUp={handlePointerEnd}
+      onPointerLeave={handlePointerEnd}
+      onPointerCancel={handlePointerEnd}
       style={{
         width: size,
         height: size,
         background: "transparent",
         display: "block",
+        cursor: "grab",
+        touchAction: "none", // bloqueia scroll vertical quando drag no globo
       }}
     />
   );
