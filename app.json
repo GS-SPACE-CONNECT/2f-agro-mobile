@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "2F-AGRO",
+    "slug": "2f-agro-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "agro2f",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#FAFAFA"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gsspaceconnect.agro2f"
+    },
+    "android": {
+      "package": "com.gsspaceconnect.agro2f",
+      "adaptiveIcon": {
+        "backgroundColor": "#FAFAFA"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-video",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
