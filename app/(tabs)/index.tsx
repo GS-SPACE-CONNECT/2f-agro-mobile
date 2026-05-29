@@ -229,7 +229,7 @@ const decorationStyles = StyleSheet.create({
   // em algumas plataformas e nao respeita render-order natural.
   clockWrap: {
     position: "absolute",
-    right: -30,
+    right: -15,
     top: 450,
     zIndex: 0,
     elevation: 0,
@@ -258,7 +258,7 @@ function createStyles(c: ThemeColors) {
     alertWrap: {
       position: "absolute",
       left: 0,
-      top: 190,
+      top: 170,
     },
     sectionTitle: {
       ...typography.hSectionItalic,
