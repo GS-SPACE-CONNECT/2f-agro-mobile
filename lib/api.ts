@@ -4,11 +4,14 @@
 // API client: mock no Sprint 1, .NET API no Sprint 2.
 
 import * as mock from "./mock-data";
-import type { Alerta, Lavoura, Propriedade } from "./types";
+import type { Alerta, DiagnosticoPraga, Lavoura, Propriedade } from "./types";
 
 // Latencia falsa pra simular network — deixa skeletons aparecerem rapido,
 // mas nao demais (UX nao deve parecer travada).
 const FAKE_LATENCY_MS = 350;
+// Inferencia "pesa" mais que list/get: simula upload + modelo rodando.
+// 1.2s da peso narrativo no pitch ("o app esta pensando") sem chatear.
+const FAKE_INFERENCE_MS = 1200;
 
 const delay = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
@@ -45,5 +48,21 @@ export const api = {
   async getCurrentAlert(): Promise<Alerta | null> {
     await delay(FAKE_LATENCY_MS);
     return mock.getCurrentAlert();
+  },
+
+  /**
+   * Roda inferencia de praga sobre a foto da folha. Sprint 1: mock que
+   * sorteia de PRAGAS_DETECTAVEIS. Sprint 2: POST multipart pro endpoint
+   * /diagnostico do .NET API, que delega pra YOLO (ONNX/TFLite).
+   *
+   * @param fotoUri  URI local da foto (file:// no device, blob: no web)
+   * @param lavouraId  Opcional — associa o diagnostico a uma lavoura
+   */
+  async diagnosticarFolha(
+    fotoUri: string,
+    lavouraId?: string,
+  ): Promise<DiagnosticoPraga> {
+    await delay(FAKE_INFERENCE_MS);
+    return mock.gerarDiagnosticoMock(fotoUri, lavouraId);
   },
 };

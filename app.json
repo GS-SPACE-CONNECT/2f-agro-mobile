@@ -30,7 +30,15 @@
       "expo-router",
       "expo-secure-store",
       "expo-video",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "O 2F-AGRO precisa da câmera para analisar as folhas e identificar pragas.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
