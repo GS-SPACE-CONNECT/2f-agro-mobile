@@ -104,8 +104,8 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
 function createStyles(c: ThemeColors) {
   return StyleSheet.create({
     container: {
-      width: 196,
-      minHeight: 220,
+      width: 220,
+      minHeight: 280,
       paddingHorizontal: spacing.lg,
       paddingTop: spacing["2xl"],
       paddingBottom: spacing.lg,
@@ -120,15 +120,18 @@ function createStyles(c: ThemeColors) {
       justifyContent: "center",
     },
     hero: {
-      fontFamily: fontFamily.light,
-      fontSize: 72,
-      lineHeight: 72,
-      letterSpacing: -4,
+      fontFamily: fontFamily.medium,
+      fontSize: 100,
+      lineHeight: 100,
+      letterSpacing: -5,
+      // Translucido pra dar peso editorial sem dominar — ghost numerals
+      // (Vercel/Stripe pricing style). Visivel mas etereo sobre o gradient.
+      opacity: 0.6,
     },
     heroSuffix: {
-      fontFamily: fontFamily.light,
-      fontSize: 28,
-      letterSpacing: -1,
+      fontFamily: fontFamily.medium,
+      fontSize: 36,
+      letterSpacing: -1.5,
     },
     kicker: {
       fontFamily: fontFamily.semibold,

@@ -251,7 +251,7 @@ function createStyles(c: ThemeColors) {
     alertWrap: {
       position: "absolute",
       left: -10,
-      top: 320,
+      top: 250,
     },
     sectionTitle: {
       ...typography.hSectionItalic,

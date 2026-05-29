@@ -70,20 +70,20 @@ export const RotatingClock = memo(RotatingClockComponent);
 
 const styles = StyleSheet.create({
   container: {
-    width: 130,
-    height: 60,
+    width: 184,
+    height: 90,
   },
   maskInner: {
     flex: 1,
     backgroundColor: "transparent",
   },
-  // Override do clockHero (forward usava 80pt). Aqui menor pra nao competir
-  // com greeting + globo na composicao premium minimal do 2F-AGRO.
+  // Clock hero size — usa typography.clockHero (Manrope Regular 80) com
+  // letterSpacing reforcado pra dar peso visual editorial.
   text: {
     ...typography.clockHero,
-    fontSize: 56,
-    lineHeight: 56,
-    letterSpacing: -2.5,
+    fontSize: 80,
+    lineHeight: 80,
+    letterSpacing: -4,
   },
   gradient: {
     flex: 1,

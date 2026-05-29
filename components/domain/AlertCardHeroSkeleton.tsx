@@ -12,7 +12,7 @@ export function AlertCardHeroSkeleton() {
 
   return (
     <View style={styles.container}>
-      <Skeleton width={130} height={66} borderRadius={4} />
+      <Skeleton width={170} height={90} borderRadius={4} />
       <Skeleton width={50} height={10} borderRadius={3} style={styles.kicker} />
       <View style={[styles.accent, { backgroundColor: colors.borderStrong }]} />
       <Skeleton width={160} height={12} borderRadius={3} style={styles.bodyLine} />
@@ -24,8 +24,8 @@ export function AlertCardHeroSkeleton() {
 
 const styles = StyleSheet.create({
   container: {
-    width: 196,
-    minHeight: 220,
+    width: 220,
+    minHeight: 280,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing["2xl"],
     paddingBottom: spacing.lg,
