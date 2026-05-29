@@ -60,6 +60,45 @@ export interface Lavoura {
 }
 
 // =====================
+// Diagnostico de praga (tela Camera "Olho na Folha")
+// =====================
+
+/**
+ * Slugs das pragas que o modelo pode detectar. Bate com as classes do dataset
+ * PlantVillage + pragas brasileiras priorizadas pelo time. "sadia" e a classe
+ * negativa (sem praga detectada).
+ */
+export type PragaTipo =
+  | "sadia"
+  | "ferrugem_asiatica"
+  | "lagarta_do_cartucho"
+  | "mancha_foliar"
+  | "oidio"
+  | "mosca_branca"
+  | "broca_do_cafe"
+  | "antracnose";
+
+export interface DiagnosticoPraga {
+  id: string;
+  /** Lavoura associada (opcional — agricultor pode bater foto solta). */
+  lavouraId?: string;
+  /** URI local da foto (file:// no device, blob: no web). */
+  fotoUri: string;
+  praga: PragaTipo;
+  /** Label PT-BR ja resolvido pra UI ("Ferrugem Asiatica"). */
+  pragaLabel: string;
+  /** 0..1, confianca do modelo. */
+  confianca: number;
+  /** Severidade da praga (reusa a paleta do Alerta). "baixo" = sadia/ok. */
+  severidade: AlertaSeveridadeKey;
+  /** Texto curto, imperativo, voz Seu Joao. Max ~120 chars. */
+  recomendacao: string;
+  /** Telefone do agronomo da cooperativa (E.164 ou local). */
+  agronomoTelefone: string;
+  criadoEm: string; // ISO timestamp
+}
+
+// =====================
 // Propriedade
 // =====================
 

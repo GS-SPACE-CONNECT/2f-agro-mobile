@@ -41,7 +41,36 @@
     "title": "Câmera",
     "subtitle": "Olho na folha",
     "coming_soon_title": "Em breve",
-    "coming_soon_description": "A câmera vai identificar pragas nas folhas. Disponível na próxima atualização."
+    "coming_soon_description": "A câmera vai identificar pragas nas folhas. Disponível na próxima atualização.",
+    "permission": {
+      "requesting_title": "Preparando a câmera",
+      "requesting_description": "Aguarde um momento.",
+      "denied_title": "Câmera bloqueada",
+      "denied_description": "Pra identificar a praga na folha, o app precisa da câmera. Libere nas configurações do celular.",
+      "grant_button": "Liberar câmera",
+      "open_settings": "Abrir configurações"
+    },
+    "capture": {
+      "hint": "Aproxime da folha. Boa luz, sem sombra.",
+      "shutter": "Tirar foto",
+      "retake": "Tirar de novo",
+      "switch": "Virar câmera",
+      "analyzing_title": "Analisando a folha",
+      "analyzing_description": "Olhando direitinho, um momento..."
+    },
+    "result": {
+      "kicker": "DIAGNÓSTICO",
+      "confidence": "{{pct}}% de certeza",
+      "no_pest_title": "Folha sadia",
+      "no_pest_body": "Continue assim. A planta tá bem.",
+      "listen": "Ouvir resultado",
+      "call_agronomist": "Falar com agrônomo",
+      "new_photo": "Tirar outra foto"
+    },
+    "error": {
+      "capture_failed": "Não foi possível tirar a foto. Tente de novo.",
+      "diagnose_failed": "Não consegui analisar agora. Tente de novo em instantes."
+    }
   },
   "cooperativa": {
     "title": "Cooperativa",
