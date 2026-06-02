@@ -57,6 +57,23 @@ export interface Lavoura {
   ndviAtual?: number;
   ultimaLeitura?: string; // ISO timestamp
   coordenadas?: { lat: number; lng: number };
+  /** ISO timestamp — retornado pelo backend, opcional no mobile. */
+  criadoEm?: string;
+}
+
+// =====================
+// Request types (POST/PUT para o backend)
+// =====================
+
+export interface CriarLavouraRequest {
+  propriedadeId: string;
+  cultura: CulturaTipo;
+  identificador: string;
+  areaHectares: number;
+  saude?: LavouraSaudeKey;
+  ndviAtual?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 // =====================
