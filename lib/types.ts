@@ -116,6 +116,44 @@ export interface DiagnosticoPraga {
 }
 
 // =====================
+// Detalhe da lavoura (drill-down)
+// =====================
+
+/** Leitura NDVI num ponto no tempo — compoe o grafico temporal. */
+export interface NdviLeitura {
+  data: string; // ISO date (YYYY-MM-DD)
+  valor: number; // -1..1
+}
+
+/** Predicao do modelo ML (probabilidade de risco + cluster K-Means). */
+export interface MlPredicao {
+  /** 0..1, probabilidade de risco nos proximos dias. */
+  probabilidadeRisco: number;
+  /** Indice do cluster K-Means (0..3, k=4). */
+  cluster: number;
+  /** Label curto do perfil ("Produtivo", "Vulneravel", etc). */
+  clusterLabel: string;
+  /** Descricao curta do que o cluster significa. */
+  clusterDescricao: string;
+}
+
+/** Acao recomendada pro agricultor — imperativa, curta. */
+export interface AcaoRecomendada {
+  id: string;
+  titulo: string;
+  descricao: string;
+  prioridade: "alta" | "media" | "baixa";
+}
+
+/** Lavoura completa com dados de drill-down (NDVI temporal, ML, alertas). */
+export interface LavouraDetalhe extends Lavoura {
+  ndviHistorico: NdviLeitura[];
+  mlPredicao: MlPredicao;
+  alertas: Alerta[];
+  acoesRecomendadas: AcaoRecomendada[];
+}
+
+// =====================
 // Propriedade
 // =====================
 

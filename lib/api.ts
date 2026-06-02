@@ -11,6 +11,7 @@ import type {
   CriarLavouraRequest,
   DiagnosticoPraga,
   Lavoura,
+  LavouraDetalhe,
   Propriedade,
 } from "./types";
 
@@ -70,6 +71,11 @@ const mockApi = {
   async getCurrentAlert(): Promise<Alerta | null> {
     await delay(FAKE_LATENCY_MS);
     return mock.getCurrentAlert();
+  },
+
+  async getDetalheLavoura(id: string): Promise<LavouraDetalhe | null> {
+    await delay(FAKE_LATENCY_MS);
+    return mock.getDetalheLavoura(id);
   },
 
   async diagnosticarFolha(
@@ -161,6 +167,15 @@ const realApi = {
         ? cur
         : best,
     );
+  },
+
+  async getDetalheLavoura(id: string): Promise<LavouraDetalhe | null> {
+    try {
+      return await request<LavouraDetalhe>(`/api/lavouras/${id}/detalhe`);
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 404) return null;
+      throw e;
+    }
   },
 
   async diagnosticarFolha(
