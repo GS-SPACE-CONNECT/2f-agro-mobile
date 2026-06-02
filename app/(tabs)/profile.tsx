@@ -13,6 +13,7 @@ import { ProfileAvatar } from "@/components/ui/ProfileAvatar";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SettingRow } from "@/components/ui/SettingRow";
 import { useTheme } from "@/context/ThemeContext";
+import { useTTS } from "@/context/TTSContext";
 import { useUserLocation } from "@/context/UserLocationContext";
 import { auth } from "@/lib/auth";
 import { fontFamily, radius, spacing, typography, type ThemeColors } from "@/lib/theme";
@@ -20,6 +21,7 @@ import { fontFamily, radius, spacing, typography, type ThemeColors } from "@/lib
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const { colors, mode, toggleTheme } = useTheme();
+  const { speed, cycleSpeed } = useTTS();
   const { propriedade } = useUserLocation();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
@@ -62,6 +64,23 @@ export default function ProfileScreen() {
             />
           </Pressable>
           <LocalePicker />
+          <Pressable
+            onPress={cycleSpeed}
+            accessibilityRole="button"
+            accessibilityLabel={t("settings.tts_speed")}
+          >
+            <SettingRow
+              icon="volume-medium"
+              label={t("settings.tts_speed")}
+              value={
+                speed === 0.75
+                  ? t("settings.tts_speed_slow")
+                  : speed === 1.25
+                    ? t("settings.tts_speed_fast")
+                    : t("settings.tts_speed_normal")
+              }
+            />
+          </Pressable>
         </View>
 
         <View style={styles.footer}>

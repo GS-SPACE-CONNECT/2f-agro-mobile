@@ -33,9 +33,11 @@ import { LavouraRowSkeleton } from "@/components/domain/LavouraRowSkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
 import { useTheme } from "@/context/ThemeContext";
+import { useTTS } from "@/context/TTSContext";
 import { useUserLocation } from "@/context/UserLocationContext";
 import { useLavouras, useAlertaAtual } from "@/hooks/useQueries";
 import { haptic } from "@/lib/haptics";
+import { speak } from "@/lib/tts";
 import type { Alerta, Lavoura } from "@/lib/types";
 import { fontFamily, radius, spacing, typography, type ThemeColors } from "@/lib/theme";
 
@@ -114,11 +116,15 @@ export default function HomeScreen() {
 
   const topLavouras = useMemo(() => lavouras.slice(0, TOP_VISIBLE), [lavouras]);
 
-  const handleListen = useCallback((a: Alerta) => {
-    // haptic já é disparado pelo AlertCardHero antes de chamar onListen
-    const texto = `${a.tipoLabel}. ${a.recomendacao}`;
-    Speech.speak(texto, { language: "pt-BR", rate: 0.9 });
-  }, []);
+  const { speed: ttsSpeed } = useTTS();
+
+  const handleListen = useCallback(
+    (a: Alerta) => {
+      const texto = `${a.tipoLabel}. ${a.recomendacao}`;
+      void speak(texto, ttsSpeed);
+    },
+    [ttsSpeed],
+  );
 
   const handleAlertPress = useCallback((a: Alerta) => {
     router.push(`/alerta/${a.id}` as never);

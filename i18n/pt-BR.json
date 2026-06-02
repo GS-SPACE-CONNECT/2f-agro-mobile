@@ -124,7 +124,11 @@
     "theme_light": "Claro",
     "theme_dark": "Escuro",
     "language": "Idioma",
-    "language_value_pt_br": "Português (Brasil)"
+    "language_value_pt_br": "Português (Brasil)",
+    "tts_speed": "Velocidade da voz",
+    "tts_speed_slow": "Devagar",
+    "tts_speed_normal": "Normal",
+    "tts_speed_fast": "Rápida"
   },
   "alerta": {
     "status": {

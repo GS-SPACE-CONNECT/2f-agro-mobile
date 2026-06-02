@@ -19,6 +19,7 @@ import type { Alerta } from "@/lib/types";
 import {
   alertaSeveridadePalette,
   fontFamily,
+  radius,
   spacing,
   type ThemeColors,
 } from "@/lib/theme";
@@ -115,13 +116,13 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
           <Pressable
             onPress={handleListen}
             style={({ pressed }) => [
-              styles.listenBtn,
-              pressed && { opacity: 0.6 },
+              styles.listenPill,
+              pressed && styles.listenPressed,
             ]}
             accessibilityRole="button"
             accessibilityLabel={t("home.alert.listen_button")}
           >
-            <Ionicons name="volume-high-outline" size={20} color={colors.text} />
+            <Ionicons name="volume-high" size={14} color={colors.text} />
             <Text style={styles.listenLabel}>
               {t("home.alert.listen_button")}
             </Text>
@@ -200,17 +201,26 @@ function createStyles(c: ThemeColors) {
       marginTop: spacing.lg,
       textTransform: "uppercase",
     },
-    listenBtn: {
+    listenPill: {
       flexDirection: "row",
       alignItems: "center",
-      gap: spacing.sm,
+      alignSelf: "flex-start",
+      gap: spacing.xs,
       marginTop: spacing.lg,
-      paddingVertical: spacing.sm,
-      minHeight: 44,
+      paddingVertical: spacing.sm - 2,
+      paddingHorizontal: spacing.md,
+      borderRadius: radius.pill,
+      borderWidth: 1,
+      borderColor: c.borderStrong,
+      backgroundColor: "transparent",
+    },
+    listenPressed: {
+      opacity: 0.85,
+      transform: [{ scale: 0.98 }],
     },
     listenLabel: {
       fontFamily: fontFamily.semibold,
-      fontSize: 16,
+      fontSize: 11,
       color: c.text,
     },
   });

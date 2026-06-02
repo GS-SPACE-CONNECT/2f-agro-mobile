@@ -35,6 +35,7 @@ import "@/i18n";
 import { MeshBackground } from "@/components/ui/MeshBackground";
 import { LocaleProvider } from "@/context/LocaleContext";
 import { NavigationThemeBridge, ThemeProvider, useTheme } from "@/context/ThemeContext";
+import { TTSProvider } from "@/context/TTSContext";
 import { UserLocationProvider } from "@/context/UserLocationContext";
 import { auth, type Session } from "@/lib/auth";
 import { registrarBackgroundSync } from "@/lib/background-sync";
@@ -57,9 +58,11 @@ export default function RootLayout() {
         <ThemeProvider>
           <NavigationThemeBridge>
             <LocaleProvider>
-              <UserLocationProvider>
-                <RootStack />
-              </UserLocationProvider>
+              <TTSProvider>
+                <UserLocationProvider>
+                  <RootStack />
+                </UserLocationProvider>
+              </TTSProvider>
             </LocaleProvider>
           </NavigationThemeBridge>
         </ThemeProvider>
