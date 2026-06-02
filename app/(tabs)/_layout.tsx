@@ -28,7 +28,7 @@ const ICONS: Record<
   index: { focused: "home", unfocused: "home-outline" },
   lavouras: { focused: "leaf", unfocused: "leaf-outline" },
   camera: { focused: "camera", unfocused: "camera-outline" },
-  cooperativa: { focused: "people", unfocused: "people-outline" },
+  cooperativa: { focused: "map", unfocused: "map-outline" },
   profile: { focused: "person-circle", unfocused: "person-circle-outline" },
 };
 
