@@ -35,8 +35,10 @@ import { LavouraRowSkeleton } from "@/components/domain/LavouraRowSkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
 import { useTheme } from "@/context/ThemeContext";
+import { useTTS } from "@/context/TTSContext";
 import { useUserLocation } from "@/context/UserLocationContext";
 import { ApiError, api } from "@/lib/api";
+import { speak } from "@/lib/tts";
 import type { Alerta, Lavoura } from "@/lib/types";
 import { fontFamily, radius, spacing, typography, type ThemeColors } from "@/lib/theme";
 
@@ -114,9 +116,15 @@ export default function HomeScreen() {
 
   const topLavouras = useMemo(() => lavouras.slice(0, TOP_VISIBLE), [lavouras]);
 
-  const handleListen = useCallback(() => {
-    // Sprint 2: Speech.speak(...)
-  }, []);
+  const { speed: ttsSpeed } = useTTS();
+
+  const handleListen = useCallback(
+    (a: Alerta) => {
+      const texto = `${a.tipoLabel}. ${a.recomendacao}`;
+      void speak(texto, ttsSpeed);
+    },
+    [ttsSpeed],
+  );
 
   const handleAlertPress = useCallback((a: Alerta) => {
     router.push(`/alerta/${a.id}` as never);

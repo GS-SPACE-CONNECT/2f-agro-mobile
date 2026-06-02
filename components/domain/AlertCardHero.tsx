@@ -19,6 +19,7 @@ import type { Alerta } from "@/lib/types";
 import {
   alertaSeveridadePalette,
   fontFamily,
+  radius,
   spacing,
   type ThemeColors,
 } from "@/lib/theme";
@@ -110,6 +111,23 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
         <Text style={styles.meta} numberOfLines={1}>
           {severidadeLabel} · {janelaText}
         </Text>
+
+        {onListen ? (
+          <Pressable
+            onPress={handleListen}
+            style={({ pressed }) => [
+              styles.listenPill,
+              pressed && styles.listenPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("home.alert.listen_button")}
+          >
+            <Ionicons name="volume-high" size={14} color={colors.text} />
+            <Text style={styles.listenLabel}>
+              {t("home.alert.listen_button")}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
     </Pressable>
   );
@@ -183,6 +201,29 @@ function createStyles(c: ThemeColors) {
       color: c.textMuted,
       marginTop: spacing.lg,
       textTransform: "uppercase",
+    },
+    // Botao "Ouvir alerta" — pill sutil alinhado ao editorial do card.
+    listenPill: {
+      flexDirection: "row",
+      alignItems: "center",
+      alignSelf: "flex-start",
+      gap: spacing.xs,
+      marginTop: spacing.lg,
+      paddingVertical: spacing.sm - 2,
+      paddingHorizontal: spacing.md,
+      borderRadius: radius.pill,
+      borderWidth: 1,
+      borderColor: c.borderStrong,
+      backgroundColor: "transparent",
+    },
+    listenPressed: {
+      opacity: 0.85,
+      transform: [{ scale: 0.98 }],
+    },
+    listenLabel: {
+      fontFamily: fontFamily.semibold,
+      fontSize: 11,
+      color: c.text,
     },
   });
 }

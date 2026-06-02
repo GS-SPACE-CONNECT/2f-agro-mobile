@@ -8,6 +8,7 @@ export const STORAGE_KEYS = {
   ONBOARDED: "@2f-agro/onboarded",
   SESSION: "@2f-agro/session",
   PROPRIEDADE: "@2f-agro/propriedade_v1",
+  TTS_SPEED: "@2f-agro/tts_speed",
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

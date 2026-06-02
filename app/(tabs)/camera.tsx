@@ -28,7 +28,9 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
 import { DiagnosticoCard } from "@/components/domain/DiagnosticoCard";
 import { useTheme } from "@/context/ThemeContext";
+import { useTTS } from "@/context/TTSContext";
 import { haptic } from "@/lib/haptics";
+import { speak } from "@/lib/tts";
 import { ApiError, api } from "@/lib/api";
 import type { DiagnosticoPraga } from "@/lib/types";
 import { fontFamily, radius, spacing, type ThemeColors } from "@/lib/theme";
@@ -109,9 +111,15 @@ export default function CameraScreen() {
     setState({ kind: "camera_ready" });
   }, []);
 
-  const handleListen = useCallback((_d: DiagnosticoPraga) => {
-    // Sprint 2 — issue #7: Speech.speak(diagnostico.recomendacao, { language: "pt-BR" })
-  }, []);
+  const { speed: ttsSpeed } = useTTS();
+
+  const handleListen = useCallback(
+    (d: DiagnosticoPraga) => {
+      const texto = `${d.pragaLabel}. ${d.recomendacao}`;
+      void speak(texto, ttsSpeed);
+    },
+    [ttsSpeed],
+  );
 
   if (effectiveState.kind === "permission_needed") {
     return (
