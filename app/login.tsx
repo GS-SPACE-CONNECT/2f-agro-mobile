@@ -23,7 +23,7 @@ export default function LoginScreen() {
 
   async function onSubmit() {
     haptic.success();
-    await auth.signIn();
+    await auth.signIn("joao@demo.com", "demo123");
     router.replace("/");
   }
 
