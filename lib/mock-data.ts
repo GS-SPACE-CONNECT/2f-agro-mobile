@@ -5,9 +5,13 @@
 // Mock data Sprint 1: roda sem backend, dados realistas pra demo.
 
 import type {
+  AcaoRecomendada,
   Alerta,
   DiagnosticoPraga,
   Lavoura,
+  LavouraDetalhe,
+  MlPredicao,
+  NdviLeitura,
   PragaTipo,
   Propriedade,
 } from "./types";
@@ -253,4 +257,198 @@ export function getCurrentAlert(): Alerta | null {
   return ativos.reduce((best, cur) =>
     order[cur.severidade] > order[best.severidade] ? cur : best,
   );
+}
+
+// =====================
+// Detalhe da lavoura (drill-down)
+// =====================
+
+/** Perfis K-Means (k=4). Indice do array = numero do cluster. */
+const CLUSTER_PERFIS: Omit<MlPredicao, "probabilidadeRisco">[] = [
+  {
+    cluster: 0,
+    clusterLabel: "Produtivo",
+    clusterDescricao:
+      "NDVI alto e estável. Solo bem nutrido, irrigação regular.",
+  },
+  {
+    cluster: 1,
+    clusterLabel: "Estável",
+    clusterDescricao:
+      "NDVI moderado. Produção constante, sem riscos iminentes.",
+  },
+  {
+    cluster: 2,
+    clusterLabel: "Vulnerável",
+    clusterDescricao:
+      "NDVI em declínio. Atenção a pragas e déficit hídrico.",
+  },
+  {
+    cluster: 3,
+    clusterLabel: "Crítico",
+    clusterDescricao:
+      "NDVI muito baixo. Risco de perda — ação urgente necessária.",
+  },
+];
+
+/** Historico NDVI por lavoura (Jan–Jul 2026). */
+const NDVI_HISTORICO: Record<string, NdviLeitura[]> = {
+  "lav-1": [
+    { data: "2026-01-15", valor: 0.32 },
+    { data: "2026-02-15", valor: 0.41 },
+    { data: "2026-03-15", valor: 0.48 },
+    { data: "2026-04-15", valor: 0.55 },
+    { data: "2026-05-15", valor: 0.63 },
+    { data: "2026-06-15", valor: 0.68 },
+    { data: "2026-07-15", valor: 0.72 },
+  ],
+  "lav-2": [
+    { data: "2026-01-15", valor: 0.65 },
+    { data: "2026-02-15", valor: 0.68 },
+    { data: "2026-03-15", valor: 0.64 },
+    { data: "2026-04-15", valor: 0.61 },
+    { data: "2026-05-15", valor: 0.55 },
+    { data: "2026-06-15", valor: 0.52 },
+    { data: "2026-07-15", valor: 0.58 },
+  ],
+  "lav-3": [
+    { data: "2026-01-15", valor: 0.22 },
+    { data: "2026-02-15", valor: 0.35 },
+    { data: "2026-03-15", valor: 0.50 },
+    { data: "2026-04-15", valor: 0.62 },
+    { data: "2026-05-15", valor: 0.70 },
+    { data: "2026-06-15", valor: 0.65 },
+    { data: "2026-07-15", valor: 0.68 },
+  ],
+  "lav-4": [
+    { data: "2026-01-15", valor: 0.38 },
+    { data: "2026-02-15", valor: 0.45 },
+    { data: "2026-03-15", valor: 0.52 },
+    { data: "2026-04-15", valor: 0.58 },
+    { data: "2026-05-15", valor: 0.64 },
+    { data: "2026-06-15", valor: 0.68 },
+    { data: "2026-07-15", valor: 0.70 },
+  ],
+  "lav-5": [
+    { data: "2026-01-15", valor: 0.30 },
+    { data: "2026-02-15", valor: 0.42 },
+    { data: "2026-03-15", valor: 0.51 },
+    { data: "2026-04-15", valor: 0.59 },
+    { data: "2026-05-15", valor: 0.66 },
+    { data: "2026-06-15", valor: 0.71 },
+    { data: "2026-07-15", valor: 0.74 },
+  ],
+  "lav-6": [
+    { data: "2026-01-15", valor: 0.45 },
+    { data: "2026-02-15", valor: 0.48 },
+    { data: "2026-03-15", valor: 0.52 },
+    { data: "2026-04-15", valor: 0.56 },
+    { data: "2026-05-15", valor: 0.60 },
+    { data: "2026-06-15", valor: 0.65 },
+    { data: "2026-07-15", valor: 0.69 },
+  ],
+};
+
+/** Predicao ML por lavoura. */
+const ML_PREDICOES: Record<string, MlPredicao> = {
+  "lav-1": { probabilidadeRisco: 0.12, ...CLUSTER_PERFIS[0] },
+  "lav-2": { probabilidadeRisco: 0.45, ...CLUSTER_PERFIS[2] },
+  "lav-3": { probabilidadeRisco: 0.08, ...CLUSTER_PERFIS[1] },
+  "lav-4": { probabilidadeRisco: 0.15, ...CLUSTER_PERFIS[0] },
+  "lav-5": { probabilidadeRisco: 0.10, ...CLUSTER_PERFIS[0] },
+  "lav-6": { probabilidadeRisco: 0.18, ...CLUSTER_PERFIS[1] },
+};
+
+/** Acoes recomendadas por lavoura. */
+const ACOES: Record<string, AcaoRecomendada[]> = {
+  "lav-1": [
+    {
+      id: "acao-1-1",
+      titulo: "Manter irrigação",
+      descricao: "Continue a rotina atual. Solo com umidade adequada.",
+      prioridade: "baixa",
+    },
+    {
+      id: "acao-1-2",
+      titulo: "Adubação de cobertura",
+      descricao: "Aplicar nitrogênio na próxima quinzena para floração.",
+      prioridade: "media",
+    },
+  ],
+  "lav-2": [
+    {
+      id: "acao-2-1",
+      titulo: "Irrigar até fim da semana",
+      descricao: "Déficit hídrico detectado. Priorizar esta lavoura.",
+      prioridade: "alta",
+    },
+    {
+      id: "acao-2-2",
+      titulo: "Inspecionar folhas",
+      descricao: "Modelo indica risco de praga. Verificar face inferior.",
+      prioridade: "alta",
+    },
+    {
+      id: "acao-2-3",
+      titulo: "Consultar agrônomo",
+      descricao: "NDVI em queda. Avaliar ajuste no manejo.",
+      prioridade: "media",
+    },
+  ],
+  "lav-3": [
+    {
+      id: "acao-3-1",
+      titulo: "Colher na próxima semana",
+      descricao: "Ciclo da alface próximo do fim. Colher antes que amargue.",
+      prioridade: "media",
+    },
+  ],
+  "lav-4": [
+    {
+      id: "acao-4-1",
+      titulo: "Manter rotina",
+      descricao: "Feijão crescendo bem. Nenhuma ação urgente.",
+      prioridade: "baixa",
+    },
+  ],
+  "lav-5": [
+    {
+      id: "acao-5-1",
+      titulo: "Manter rotina",
+      descricao: "Milho com NDVI excelente. Continuar irrigação.",
+      prioridade: "baixa",
+    },
+  ],
+  "lav-6": [
+    {
+      id: "acao-6-1",
+      titulo: "Verificar pragas",
+      descricao: "Mandioca estável, mas época de mosca branca.",
+      prioridade: "media",
+    },
+  ],
+};
+
+/**
+ * Monta o detalhe completo de uma lavoura, juntando dados base + NDVI
+ * historico + predicao ML + alertas filtrados + acoes recomendadas.
+ */
+export function getDetalheLavoura(id: string): LavouraDetalhe | null {
+  const base = LAVOURAS.find((l) => l.id === id);
+  if (!base) return null;
+
+  const alertas = ALERTAS.filter(
+    (a) => a.lavouraId === id,
+  );
+
+  return {
+    ...base,
+    ndviHistorico: NDVI_HISTORICO[id] ?? [],
+    mlPredicao: ML_PREDICOES[id] ?? {
+      probabilidadeRisco: 0,
+      ...CLUSTER_PERFIS[1],
+    },
+    alertas,
+    acoesRecomendadas: ACOES[id] ?? [],
+  };
 }

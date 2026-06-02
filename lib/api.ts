@@ -4,7 +4,7 @@
 // API client: mock no Sprint 1, .NET API no Sprint 2.
 
 import * as mock from "./mock-data";
-import type { Alerta, DiagnosticoPraga, Lavoura, Propriedade } from "./types";
+import type { Alerta, DiagnosticoPraga, Lavoura, LavouraDetalhe, Propriedade } from "./types";
 
 // Latencia falsa pra simular network — deixa skeletons aparecerem rapido,
 // mas nao demais (UX nao deve parecer travada).
@@ -48,6 +48,11 @@ export const api = {
   async getCurrentAlert(): Promise<Alerta | null> {
     await delay(FAKE_LATENCY_MS);
     return mock.getCurrentAlert();
+  },
+
+  async getDetalheLavoura(id: string): Promise<LavouraDetalhe | null> {
+    await delay(FAKE_LATENCY_MS);
+    return mock.getDetalheLavoura(id);
   },
 
   /**

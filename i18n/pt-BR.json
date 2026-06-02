@@ -79,8 +79,20 @@
     "coming_soon_description": "Aqui você vai ver alertas da região e falar com o agrônomo. Disponível na próxima atualização."
   },
   "lavoura_detail": {
-    "coming_soon_title": "Em breve",
-    "coming_soon_description": "Histórico, NDVI e recomendações específicas dessa lavoura. Disponível na próxima atualização."
+    "ndvi_section": "NDVI",
+    "ndvi_atual": "atual",
+    "ml_section": "Modelo ML",
+    "ml_probabilidade": "probabilidade de risco",
+    "cluster_section": "Perfil K-Means",
+    "cluster_numero": "Cluster {{n}}",
+    "alertas_section": "Alertas",
+    "alertas_empty": "Nenhum alerta registrado.",
+    "acoes_section": "Ações recomendadas",
+    "prioridade_alta": "Prioridade alta",
+    "prioridade_media": "Prioridade média",
+    "prioridade_baixa": "Prioridade baixa",
+    "not_found_title": "Lavoura não encontrada",
+    "not_found_description": "Não foi possível carregar os detalhes desta lavoura."
   },
   "alerta_detail": {
     "coming_soon_title": "Em breve",
