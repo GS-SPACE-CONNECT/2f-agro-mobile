@@ -120,6 +120,12 @@
       "perdida": "Perdida"
     }
   },
+  "sync": {
+    "offline": "Sem conexão",
+    "offline_com_pendentes": "Sem conexão · {{count}} pendente(s)",
+    "pendentes": "{{count}} pendente(s) pra sincronizar",
+    "sincronizando": "Sincronizando..."
+  },
   "common": {
     "retry": "Tentar de novo",
     "back": "Voltar",
