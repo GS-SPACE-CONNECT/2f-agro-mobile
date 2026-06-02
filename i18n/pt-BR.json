@@ -3,7 +3,7 @@
     "home": "Início",
     "lavouras": "Lavouras",
     "camera": "Câmera",
-    "cooperativa": "Cooperativa",
+    "cooperativa": "Mapa",
     "perfil": "Perfil"
   },
   "auth": {
@@ -73,10 +73,21 @@
     }
   },
   "cooperativa": {
-    "title": "Cooperativa",
-    "subtitle": "Sua comunidade",
+    "title": "Mapa",
+    "subtitle": "Região da cooperativa",
     "coming_soon_title": "Em breve",
-    "coming_soon_description": "Aqui você vai ver alertas da região e falar com o agrônomo. Disponível na próxima atualização."
+    "coming_soon_description": "Aqui você vai ver alertas da região e falar com o agrônomo. Disponível na próxima atualização.",
+    "filter_all": "Todos",
+    "filter_seca": "Seca",
+    "filter_praga": "Praga",
+    "filter_geada": "Geada",
+    "filter_chuva": "Chuva",
+    "filter_queimada": "Queimada",
+    "pin_area": "{{area}} ha",
+    "pin_alert_active": "Alerta ativo",
+    "pin_no_alert": "Sem alertas",
+    "pin_saude": "Saúde: {{status}}",
+    "properties_count": "{{count}} propriedades"
   },
   "lavoura_detail": {
     "coming_soon_title": "Em breve",

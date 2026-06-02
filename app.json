@@ -38,6 +38,12 @@
           "microphonePermission": false,
           "recordAudioAndroid": false
         }
+      ],
+      [
+        "react-native-maps",
+        {
+          "androidGoogleMapsApiKey": ""
+        }
       ]
     ],
     "experiments": {
