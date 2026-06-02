@@ -1,16 +1,13 @@
-// Home 2F-AGRO — "Sua roca hoje". Composicao premium minimalista.
-// Layout (TOP -> BOTTOM):
+// Home 2F-AGRO — "Sua roça hoje". Composição premium minimalista.
+// Layout (TOP → BOTTOM):
 //   - AppBackground gradient vertical
-//   - Hero area (altura 560):
-//       Row top: Greeting "Bom dia, Joao da Silva" Playfair 36 (esquerda)
-//       Row top: RotatingClock HH:MM (direita, mais abaixo q greeting pra
-//                nao competir; reduzido a 56pt)
-//       Globe DOM com bleed direita (mais abaixo q antes)
-//       AlertCardHero com bleed esquerdo (mais abaixo q antes)
-//   - Section title "Suas lavouras" Playfair italic 20
-//   - Lista vertical de LavouraRow (dot + caps + meta inline, hairline)
-//   - FooterAction "Tirar foto da folha" -> /camera
-// Home: greeting + clock + globo + alerta hero + lista de lavouras + cta.
+//   - Hero area:
+//       Greeting "Bom dia, Seu João" Playfair 36 (saudação por hora do dia)
+//       RotatingClock + Globe DOM (decoração)
+//       AlertCardHero com botão 🔊 Ouvir (TTS via expo-speech)
+//   - Section title "Minhas lavouras" Playfair italic
+//   - Lista vertical de LavouraRow
+//   - Botões de ação: Tirar foto / Mapa / Cooperativa
 
 import { memo, useCallback, useMemo, useState } from "react";
 import {
@@ -21,11 +18,12 @@ import {
   Text,
   View,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import * as Speech from "expo-speech";
 import { useTranslation } from "react-i18next";
 
 import { AppBackground } from "@/components/ui/AppBackground";
-import { FooterAction } from "@/components/ui/FooterAction";
 import Globe from "@/components/illustrations/Globe.dom";
 import { RotatingClock } from "@/components/illustrations/RotatingClock";
 import { AlertCardHero } from "@/components/domain/AlertCardHero";
@@ -37,7 +35,8 @@ import { ErrorBanner } from "@/components/ui/ErrorBanner";
 import { useTheme } from "@/context/ThemeContext";
 import { useUserLocation } from "@/context/UserLocationContext";
 import { useLavouras, useAlertaAtual } from "@/hooks/useQueries";
-import type { Alerta } from "@/lib/types";
+import { haptic } from "@/lib/haptics";
+import type { Alerta, Lavoura } from "@/lib/types";
 import { fontFamily, radius, spacing, typography, type ThemeColors } from "@/lib/theme";
 
 const TOP_VISIBLE = 6;
@@ -45,13 +44,25 @@ const LIST_HORIZONTAL_PADDING = 0; // rows ja tem padding interno
 const SECTION_HORIZONTAL_PADDING = 30;
 const HERO_AREA_HEIGHT = 490;
 
-const Greeting = memo(function Greeting({ fullName }: { fullName: string }) {
+/** Retorna a chave i18n de saudação adequada à hora do dia. */
+function getGreetingKey(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "home.greeting_morning";
+  if (hour < 18) return "home.greeting_afternoon";
+  return "home.greeting_evening";
+}
+
+const Greeting = memo(function Greeting({ name }: { name: string }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(colors), [colors]);
   return (
-    <Text style={styles.greeting} numberOfLines={2}>
-      {t("home.welcome", { name: fullName })}
+    <Text
+      style={styles.greeting}
+      numberOfLines={2}
+      accessibilityRole="header"
+    >
+      {t(getGreetingKey(), { name })}
     </Text>
   );
 });
@@ -103,15 +114,17 @@ export default function HomeScreen() {
 
   const topLavouras = useMemo(() => lavouras.slice(0, TOP_VISIBLE), [lavouras]);
 
-  const handleListen = useCallback(() => {
-    // Sprint 2: Speech.speak(...)
+  const handleListen = useCallback((a: Alerta) => {
+    // haptic já é disparado pelo AlertCardHero antes de chamar onListen
+    const texto = `${a.tipoLabel}. ${a.recomendacao}`;
+    Speech.speak(texto, { language: "pt-BR", rate: 0.9 });
   }, []);
 
   const handleAlertPress = useCallback((a: Alerta) => {
     router.push(`/alerta/${a.id}` as never);
   }, []);
 
-  const fullName = propriedade?.donoFullName ?? "";
+  const displayName = propriedade?.donoNome ?? "";
   const markerLat = propriedade?.lat ?? -8.2839;
   const markerLng = propriedade?.lng ?? -35.9758;
 
@@ -137,7 +150,7 @@ export default function HomeScreen() {
         ListHeaderComponent={
           <View>
             <View style={styles.heroArea}>
-              <Greeting fullName={fullName} />
+              <Greeting name={displayName} />
               <HeroDecoration markerLat={markerLat} markerLng={markerLng} />
               <View style={styles.alertWrap}>
                 {initialLoading ? (
@@ -195,12 +208,51 @@ export default function HomeScreen() {
         }
         ListFooterComponent={
           !initialLoading && topLavouras.length > 0 ? (
-            <View style={styles.footerWrap}>
-              <FooterAction
-                icon="camera"
-                label={t("home.foto_folha_cta")}
-                onPress={() => router.push("/camera" as never)}
-              />
+            <View style={styles.actionRow}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.actionBtn,
+                  pressed && { opacity: 0.6 },
+                ]}
+                onPress={() => {
+                  haptic.light();
+                  router.push("/camera" as never);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={t("home.foto_folha_cta")}
+              >
+                <Ionicons name="camera-outline" size={24} color={colors.text} />
+                <Text style={styles.actionLabel}>{t("home.foto_folha_cta")}</Text>
+              </Pressable>
+
+              <Pressable
+                style={styles.actionBtn}
+                disabled
+                accessibilityRole="button"
+                accessibilityLabel={t("home.mapa_cta")}
+                accessibilityState={{ disabled: true }}
+              >
+                <Ionicons name="map-outline" size={24} color={colors.textSubtle} />
+                <Text style={[styles.actionLabel, { color: colors.textSubtle }]}>
+                  {t("home.mapa_cta")}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={({ pressed }) => [
+                  styles.actionBtn,
+                  pressed && { opacity: 0.6 },
+                ]}
+                onPress={() => {
+                  haptic.light();
+                  router.push("/cooperativa" as never);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={t("home.cooperativa_cta")}
+              >
+                <Ionicons name="people-outline" size={24} color={colors.text} />
+                <Text style={styles.actionLabel}>{t("home.cooperativa_cta")}</Text>
+              </Pressable>
             </View>
           ) : null
         }
@@ -282,9 +334,26 @@ function createStyles(c: ThemeColors) {
       fontFamily: fontFamily.semibold,
       color: c.primaryText,
     },
-    footerWrap: {
+    actionRow: {
+      flexDirection: "row",
+      justifyContent: "space-evenly",
       paddingHorizontal: SECTION_HORIZONTAL_PADDING,
-      marginTop: spacing["2xl"],
+      paddingVertical: spacing["2xl"],
+      marginTop: spacing.lg,
+    },
+    actionBtn: {
+      alignItems: "center",
+      justifyContent: "center",
+      gap: spacing.sm,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.lg,
+      minHeight: 64,
+      minWidth: 80,
+    },
+    actionLabel: {
+      fontFamily: fontFamily.semibold,
+      fontSize: 16,
+      color: c.text,
     },
     greeting: {
       ...typography.hDisplay,

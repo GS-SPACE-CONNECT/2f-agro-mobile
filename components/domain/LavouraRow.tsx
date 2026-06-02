@@ -100,7 +100,7 @@ function createStyles(c: ThemeColors) {
     },
     cultura: {
       fontFamily: fontFamily.semibold,
-      fontSize: 12,
+      fontSize: 14,
       letterSpacing: 2,
       color: c.text,
       flexShrink: 0,
@@ -110,7 +110,7 @@ function createStyles(c: ThemeColors) {
     },
     meta: {
       fontFamily: fontFamily.light,
-      fontSize: 11,
+      fontSize: 13,
       letterSpacing: 0.3,
       color: c.textMuted,
       flexShrink: 1,

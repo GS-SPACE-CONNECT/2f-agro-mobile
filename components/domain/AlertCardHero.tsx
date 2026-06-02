@@ -110,6 +110,23 @@ export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps)
         <Text style={styles.meta} numberOfLines={1}>
           {severidadeLabel} · {janelaText}
         </Text>
+
+        {onListen ? (
+          <Pressable
+            onPress={handleListen}
+            style={({ pressed }) => [
+              styles.listenBtn,
+              pressed && { opacity: 0.6 },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("home.alert.listen_button")}
+          >
+            <Ionicons name="volume-high-outline" size={20} color={colors.text} />
+            <Text style={styles.listenLabel}>
+              {t("home.alert.listen_button")}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
     </Pressable>
   );
@@ -170,19 +187,31 @@ function createStyles(c: ThemeColors) {
     },
     body: {
       fontFamily: fontFamily.regular,
-      fontSize: 13,
-      lineHeight: 19,
+      fontSize: 16,
+      lineHeight: 24,
       letterSpacing: -0.1,
       color: c.text,
-      paddingRight: 30, // evita colidir com o listenBtn (quando presente)
     },
     meta: {
       fontFamily: fontFamily.light,
-      fontSize: 9,
+      fontSize: 13,
       letterSpacing: 1.5,
       color: c.textMuted,
       marginTop: spacing.lg,
       textTransform: "uppercase",
+    },
+    listenBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.sm,
+      marginTop: spacing.lg,
+      paddingVertical: spacing.sm,
+      minHeight: 44,
+    },
+    listenLabel: {
+      fontFamily: fontFamily.semibold,
+      fontSize: 16,
+      color: c.text,
     },
   });
 }
