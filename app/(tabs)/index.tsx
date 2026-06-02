@@ -12,7 +12,7 @@
 //   - FooterAction "Tirar foto da folha" -> /camera
 // Home: greeting + clock + globo + alerta hero + lista de lavouras + cta.
 
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -36,8 +36,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
 import { useTheme } from "@/context/ThemeContext";
 import { useUserLocation } from "@/context/UserLocationContext";
-import { ApiError, api } from "@/lib/api";
-import type { Alerta, Lavoura } from "@/lib/types";
+import { useLavouras, useAlertaAtual } from "@/hooks/useQueries";
+import type { Alerta } from "@/lib/types";
 import { fontFamily, radius, spacing, typography, type ThemeColors } from "@/lib/theme";
 
 const TOP_VISIBLE = 6;
@@ -82,35 +82,24 @@ export default function HomeScreen() {
   const { propriedade } = useUserLocation();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
-  const [lavouras, setLavouras] = useState<Lavoura[]>([]);
-  const [alerta, setAlerta] = useState<Alerta | null>(null);
+  // React Query: cache offline automático via persistQueryClient
+  const lavourasQuery = useLavouras();
+  const alertaQuery = useAlertaAtual();
+
+  const lavouras = lavourasQuery.data ?? [];
+  const alerta = alertaQuery.data ?? null;
+  const initialLoading =
+    lavourasQuery.isLoading && !lavourasQuery.data;
+  const error =
+    lavourasQuery.error?.message ?? alertaQuery.error?.message ?? null;
+
   const [refreshing, setRefreshing] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const load = useCallback(async () => {
-    setError(null);
-    try {
-      const [l, a] = await Promise.all([api.listLavouras(), api.getCurrentAlert()]);
-      setLavouras(l);
-      setAlerta(a);
-    } catch (e) {
-      setError(e instanceof ApiError ? e.message : t("home.error"));
-    }
-  }, [t]);
-
-  useEffect(() => {
-    void (async () => {
-      await load();
-      setInitialLoading(false);
-    })();
-  }, [load]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await load();
+    await Promise.all([lavourasQuery.refetch(), alertaQuery.refetch()]);
     setRefreshing(false);
-  }, [load]);
+  }, [lavourasQuery, alertaQuery]);
 
   const topLavouras = useMemo(() => lavouras.slice(0, TOP_VISIBLE), [lavouras]);
 
@@ -125,6 +114,11 @@ export default function HomeScreen() {
   const fullName = propriedade?.donoFullName ?? "";
   const markerLat = propriedade?.lat ?? -8.2839;
   const markerLng = propriedade?.lng ?? -35.9758;
+
+  const retryAll = useCallback(() => {
+    void lavourasQuery.refetch();
+    void alertaQuery.refetch();
+  }, [lavourasQuery, alertaQuery]);
 
   return (
     <AppBackground>
@@ -159,7 +153,7 @@ export default function HomeScreen() {
             </View>
             {error && lavouras.length > 0 ? (
               <View style={styles.errorWrap}>
-                <ErrorBanner message={error} onRetry={() => void load()} />
+                <ErrorBanner message={error} onRetry={retryAll} />
               </View>
             ) : null}
             {(initialLoading || topLavouras.length > 0) ? (
@@ -182,7 +176,7 @@ export default function HomeScreen() {
                 description={error}
               />
               <Pressable
-                onPress={() => void load()}
+                onPress={retryAll}
                 style={({ pressed }) => [
                   styles.retryPill,
                   pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },

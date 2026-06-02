@@ -1,14 +1,15 @@
 // Tab bar 2F-AGRO: 5 abas (Home, Lavouras, Camera, Cooperativa, Perfil).
 // Glass thick mantida do forward.
-// Tab bar: 5 abas glass.
+// Tab bar: 5 abas glass. SyncIndicator flutuante no topo.
 
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { useCallback } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { GlassSurface } from "@/components/ui/GlassSurface";
+import { SyncIndicator } from "@/components/ui/SyncIndicator";
 import { useTheme } from "@/context/ThemeContext";
 import { fontFamily } from "@/lib/theme";
 
@@ -48,8 +49,10 @@ export default function TabsLayout() {
   );
 
   return (
-    <Tabs
-      screenOptions={{
+    <View style={{ flex: 1 }}>
+      <SyncIndicator />
+      <Tabs
+        screenOptions={{
         headerShown: false,
         sceneStyle: { backgroundColor: "transparent" },
         animation: "none",
@@ -108,6 +111,7 @@ export default function TabsLayout() {
         name="profile"
         options={{ title: t("tabs.perfil"), tabBarIcon: makeTabIcon("profile") }}
       />
-    </Tabs>
+      </Tabs>
+    </View>
   );
 }
