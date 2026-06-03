@@ -1,15 +1,11 @@
-// SettingRow: linha de configuracao com icone + label/value + slot direito.
-// Reescrita pro Glass Minimalist: transparent (sem wrapping de card), opt-in
-// divider hairline pra ser usada dentro de um group GlassSurface no Profile.
-//
-// Layout: [iconWrap 36x36] [label\nvalue] [right slot]
+// SettingRow: linha de configuração com ícone + label/value. Sem card chrome.
 
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { useTheme } from "@/context/ThemeContext";
-import { spacing, typography, type ThemeColors } from "@/lib/theme";
+import { fontFamily, spacing, typography, type ThemeColors } from "@/lib/theme";
 
 export type SettingRowEmphasis = "label" | "value";
 
@@ -85,9 +81,9 @@ function createStyles(c: ThemeColors) {
       gap: spacing.md,
     },
     iconWrap: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
+      width: 34,
+      height: 34,
+      borderRadius: 17,
       backgroundColor: c.primarySoft,
       alignItems: "center",
       justifyContent: "center",
@@ -95,13 +91,12 @@ function createStyles(c: ThemeColors) {
     textCol: { flex: 1 },
     textPrimary: {
       ...typography.body,
-      fontWeight: "700",
+      fontFamily: fontFamily.semibold,
       color: c.text,
     },
     textSecondary: {
       ...typography.caption,
       color: c.textMuted,
-      marginTop: 2,
     },
   });
 }

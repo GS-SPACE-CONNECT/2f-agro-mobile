@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
 import { useTheme } from "@/context/ThemeContext";
-import type { ThemeColors } from "@/lib/theme";
+import { fontFamily, type ThemeColors } from "@/lib/theme";
 
 export interface ProfileAvatarProps {
   uri?: string | null;
@@ -60,8 +60,8 @@ function createStyles(c: ThemeColors, size: number) {
       width: size,
       height: size,
       borderRadius: size / 2,
-      borderWidth: 2,
-      borderColor: c.primary,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: c.borderStrong,
     },
     placeholder: {
       backgroundColor: c.surfaceElevated,
@@ -69,9 +69,9 @@ function createStyles(c: ThemeColors, size: number) {
       justifyContent: "center",
     },
     initials: {
-      fontSize: size * 0.4,
-      fontWeight: "800",
-      color: c.primary,
+      fontFamily: fontFamily.bold,
+      fontSize: size * 0.36,
+      color: c.text,
     },
   });
 }

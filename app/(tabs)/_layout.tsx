@@ -1,6 +1,6 @@
 // Tab bar 2F-AGRO: 5 abas (Home, Lavouras, Camera, Cooperativa, Perfil).
-// Glass thick mantida do forward.
-// Tab bar: 5 abas glass. SyncIndicator flutuante no topo.
+// Glass thick sobre fundo transparente. Labels Manrope Medium 10px.
+// Ícones outline/fill pra estado ativo/inativo.
 
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
@@ -41,7 +41,7 @@ export default function TabsLayout() {
       ({ color, size, focused }: TabIconRenderProps) => (
         <Ionicons
           name={focused ? ICONS[key].focused : ICONS[key].unfocused}
-          size={size - 2}
+          size={size - 4}
           color={color}
         />
       ),
@@ -85,9 +85,9 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: {
-          fontFamily: fontFamily.semibold,
-          fontSize: 11,
-          letterSpacing: 0.2,
+          fontFamily: fontFamily.medium,
+          fontSize: 10,
+          letterSpacing: 0.3,
         },
       }}
     >

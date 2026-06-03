@@ -1,6 +1,5 @@
-// Login Sprint 1 — single-button CTA. Sprint 2 vira email + senha
-// (formulario do forward fica como referencia em git history).
-// Login mock: "Entrar como Seu Joao" -> sessao mockada -> home.
+// Login Sprint 1 — CTA único "Entrar como Seu João".
+// Layout editorial: numeral fantasma + Playfair display + CTA pill.
 
 import { useMemo } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
@@ -34,6 +33,9 @@ export default function LoginScreen() {
         { paddingTop: insets.top + spacing["5xl"], paddingBottom: insets.bottom + spacing["3xl"] },
       ]}
     >
+      {/* Numeral fantasma — decorativo, editorial */}
+      <Text style={styles.ghostNumeral}>01</Text>
+
       <Animated.View style={[styles.header, { opacity, transform: [{ translateY }] }]}>
         <Text style={styles.brand}>2F-AGRO</Text>
         <Text style={styles.heroTitle}>{t("auth.welcome")}</Text>
@@ -52,6 +54,7 @@ export default function LoginScreen() {
         >
           <Text style={styles.pillCTALabel}>{t("auth.sign_in")}</Text>
         </Pressable>
+        <Text style={styles.versionLine}>v1.0 · FIAP 2026</Text>
       </View>
     </View>
   );
@@ -64,6 +67,17 @@ function createStyles(c: ThemeColors) {
       backgroundColor: "transparent",
       paddingHorizontal: spacing["2xl"],
     },
+    ghostNumeral: {
+      position: "absolute",
+      top: 60,
+      right: -20,
+      fontFamily: fontFamily.displayRegular,
+      fontSize: 200,
+      lineHeight: 200,
+      letterSpacing: -10,
+      color: c.text,
+      opacity: 0.04,
+    },
     header: {
       alignItems: "flex-start",
       marginTop: spacing["3xl"],
@@ -72,26 +86,27 @@ function createStyles(c: ThemeColors) {
     brand: {
       fontFamily: fontFamily.displayBold,
       fontSize: 56,
-      letterSpacing: -2,
+      letterSpacing: -2.5,
       color: c.text,
       marginBottom: spacing.lg,
     },
     heroTitle: {
       fontFamily: fontFamily.displayRegular,
-      fontSize: 32,
-      lineHeight: 38,
+      fontSize: 30,
+      lineHeight: 36,
       letterSpacing: -1,
       color: c.text,
     },
     tagline: {
       ...typography.bodyLg,
       color: c.textMuted,
-      maxWidth: 320,
+      maxWidth: 300,
       marginTop: spacing.md,
     },
     footer: {
       marginTop: "auto",
       paddingTop: spacing["3xl"],
+      gap: spacing.lg,
     },
     pillCTA: {
       height: 56,
@@ -105,6 +120,12 @@ function createStyles(c: ThemeColors) {
       ...typography.bodyLg,
       fontFamily: fontFamily.semibold,
       color: c.primaryText,
+    },
+    versionLine: {
+      ...typography.caption,
+      fontFamily: fontFamily.light,
+      color: c.textSubtle,
+      textAlign: "center",
     },
   });
 }
