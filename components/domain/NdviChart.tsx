@@ -52,6 +52,9 @@ export function NdviChart({ leituras, accentColor }: NdviChartProps) {
                 ]}
               />
             </View>
+            {isLast ? (
+              <Text style={styles.valueLabel}>{l.valor.toFixed(2)}</Text>
+            ) : null}
             <Text
               style={[
                 styles.label,
@@ -92,9 +95,17 @@ function createStyles(c: ThemeColors) {
       borderBottomLeftRadius: 2,
       borderBottomRightRadius: 2,
     },
+    valueLabel: {
+      fontFamily: fontFamily.medium,
+      fontSize: 10,
+      letterSpacing: -0.3,
+      color: c.text,
+      textAlign: "center",
+      marginTop: 2,
+    },
     label: {
       fontFamily: fontFamily.light,
-      fontSize: 9,
+      fontSize: 10,
       letterSpacing: 0.5,
       color: c.textSubtle,
       textTransform: "uppercase",
