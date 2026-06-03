@@ -10,5 +10,6 @@ module.exports = ({ config }) => ({
   extra: {
     ...config.extra,
     apiBaseUrl: process.env.EXPO_PUBLIC_API_URL ?? DEFAULT_API_URL,
+    useMock: process.env.EXPO_PUBLIC_USE_MOCK ?? "true",
   },
 });

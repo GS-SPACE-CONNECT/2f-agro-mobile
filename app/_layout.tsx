@@ -6,6 +6,10 @@ import { Ionicons } from "@expo/vector-icons";
 // que aplica display:'none' nas inativas.
 enableScreens(true);
 
+// Importar background-sync no top-level — defineTask DEVE ser registrado
+// antes de qualquer render pra que o TaskManager encontre a task.
+import "@/lib/background-sync";
+
 import {
   PlayfairDisplay_400Regular,
   PlayfairDisplay_500Medium_Italic,
@@ -19,6 +23,7 @@ import {
   Manrope_600SemiBold,
   Manrope_700Bold,
 } from "@expo-google-fonts/manrope";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { useFonts } from "expo-font";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -30,21 +35,38 @@ import "@/i18n";
 import { MeshBackground } from "@/components/ui/MeshBackground";
 import { LocaleProvider } from "@/context/LocaleContext";
 import { NavigationThemeBridge, ThemeProvider, useTheme } from "@/context/ThemeContext";
+import { TTSProvider } from "@/context/TTSContext";
 import { UserLocationProvider } from "@/context/UserLocationContext";
 import { auth, type Session } from "@/lib/auth";
+import { registrarBackgroundSync } from "@/lib/background-sync";
+import { queryClient, asyncStoragePersister } from "@/lib/query-client";
+import { processarFila } from "@/lib/offline-queue";
 
 export default function RootLayout() {
+  // Registra background-sync e tenta processar fila pendente no boot
+  useEffect(() => {
+    void registrarBackgroundSync();
+    void processarFila();
+  }, []);
+
   return (
     <SafeAreaProvider>
-      <ThemeProvider>
-        <NavigationThemeBridge>
-          <LocaleProvider>
-            <UserLocationProvider>
-              <RootStack />
-            </UserLocationProvider>
-          </LocaleProvider>
-        </NavigationThemeBridge>
-      </ThemeProvider>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister: asyncStoragePersister }}
+      >
+        <ThemeProvider>
+          <NavigationThemeBridge>
+            <LocaleProvider>
+              <TTSProvider>
+                <UserLocationProvider>
+                  <RootStack />
+                </UserLocationProvider>
+              </TTSProvider>
+            </LocaleProvider>
+          </NavigationThemeBridge>
+        </ThemeProvider>
+      </PersistQueryClientProvider>
     </SafeAreaProvider>
   );
 }

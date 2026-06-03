@@ -1,8 +1,9 @@
 // Lavouras — lista vertical completa. Sprint 1: sem filtros. Mesmo
 // design da home (LavouraRow), apenas com header.
+// React Query: cache offline automático via persistQueryClient.
 // Lista de lavouras: vertical, todas visiveis.
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -14,8 +15,7 @@ import { LavouraRow } from "@/components/domain/LavouraRow";
 import { LavouraRowSkeleton } from "@/components/domain/LavouraRowSkeleton";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useTheme } from "@/context/ThemeContext";
-import { ApiError, api } from "@/lib/api";
-import type { Lavoura } from "@/lib/types";
+import { useLavouras } from "@/hooks/useQueries";
 import { spacing, type ThemeColors } from "@/lib/theme";
 
 const HORIZONTAL_PADDING = 30;
@@ -25,33 +25,20 @@ export default function LavourasScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
-  const [lavouras, setLavouras] = useState<Lavoura[]>([]);
+  // React Query: serve dados do cache AsyncStorage quando offline
+  const lavourasQuery = useLavouras();
+
+  const lavouras = lavourasQuery.data ?? [];
+  const initialLoading = lavourasQuery.isLoading && !lavourasQuery.data;
+  const error = lavourasQuery.error?.message ?? null;
+
   const [refreshing, setRefreshing] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const load = useCallback(async () => {
-    setError(null);
-    try {
-      const l = await api.listLavouras();
-      setLavouras(l);
-    } catch (e) {
-      setError(e instanceof ApiError ? e.message : t("home.error"));
-    }
-  }, [t]);
-
-  useEffect(() => {
-    void (async () => {
-      await load();
-      setInitialLoading(false);
-    })();
-  }, [load]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await load();
+    await lavourasQuery.refetch();
     setRefreshing(false);
-  }, [load]);
+  }, [lavourasQuery]);
 
   return (
     <AppBackground>
@@ -72,7 +59,7 @@ export default function LavourasScreen() {
             <ScreenHeader title={t("lavouras.title")} subtitle={t("lavouras.subtitle")} />
             {error && lavouras.length > 0 ? (
               <View style={styles.errorWrap}>
-                <ErrorBanner message={error} onRetry={() => void load()} />
+                <ErrorBanner message={error} onRetry={() => void lavourasQuery.refetch()} />
               </View>
             ) : null}
           </View>

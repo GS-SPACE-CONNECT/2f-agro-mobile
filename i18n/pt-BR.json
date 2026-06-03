@@ -3,7 +3,7 @@
     "home": "Início",
     "lavouras": "Lavouras",
     "camera": "Câmera",
-    "cooperativa": "Cooperativa",
+    "cooperativa": "Mapa",
     "perfil": "Perfil"
   },
   "auth": {
@@ -15,13 +15,18 @@
   },
   "home": {
     "welcome": "Bom dia,\n{{name}}",
+    "greeting_morning": "Bom dia,\n{{name}}",
+    "greeting_afternoon": "Boa tarde,\n{{name}}",
+    "greeting_evening": "Boa noite,\n{{name}}",
     "error": "Não foi possível atualizar agora.",
     "error_title": "Sem conexão",
     "empty_title": "Cadastre sua primeira lavoura",
     "empty_description": "Vamos começar a monitorar sua produção.",
-    "lavouras_section": "Suas lavouras",
+    "lavouras_section": "Minhas lavouras",
     "see_all_with_count": "Ver todas ({{count}})",
-    "foto_folha_cta": "Tirar foto da folha",
+    "foto_folha_cta": "Tirar foto",
+    "mapa_cta": "Mapa",
+    "cooperativa_cta": "Cooperativa",
     "alert": {
       "probability_label": "Probabilidade",
       "window_one": "próximo dia",
@@ -73,14 +78,37 @@
     }
   },
   "cooperativa": {
-    "title": "Cooperativa",
-    "subtitle": "Sua comunidade",
+    "title": "Mapa",
+    "subtitle": "Região da cooperativa",
     "coming_soon_title": "Em breve",
-    "coming_soon_description": "Aqui você vai ver alertas da região e falar com o agrônomo. Disponível na próxima atualização."
+    "coming_soon_description": "Aqui você vai ver alertas da região e falar com o agrônomo. Disponível na próxima atualização.",
+    "filter_all": "Todos",
+    "filter_seca": "Seca",
+    "filter_praga": "Praga",
+    "filter_geada": "Geada",
+    "filter_chuva": "Chuva",
+    "filter_queimada": "Queimada",
+    "pin_area": "{{area}} ha",
+    "pin_alert_active": "Alerta ativo",
+    "pin_no_alert": "Sem alertas",
+    "pin_saude": "Saúde: {{status}}",
+    "properties_count": "{{count}} propriedades"
   },
   "lavoura_detail": {
-    "coming_soon_title": "Em breve",
-    "coming_soon_description": "Histórico, NDVI e recomendações específicas dessa lavoura. Disponível na próxima atualização."
+    "ndvi_section": "NDVI",
+    "ndvi_atual": "atual",
+    "ml_section": "Modelo ML",
+    "ml_probabilidade": "probabilidade de risco",
+    "cluster_section": "Perfil K-Means",
+    "cluster_numero": "Cluster {{n}}",
+    "alertas_section": "Alertas",
+    "alertas_empty": "Nenhum alerta registrado.",
+    "acoes_section": "Ações recomendadas",
+    "prioridade_alta": "Prioridade alta",
+    "prioridade_media": "Prioridade média",
+    "prioridade_baixa": "Prioridade baixa",
+    "not_found_title": "Lavoura não encontrada",
+    "not_found_description": "Não foi possível carregar os detalhes desta lavoura."
   },
   "alerta_detail": {
     "coming_soon_title": "Em breve",
@@ -96,7 +124,11 @@
     "theme_light": "Claro",
     "theme_dark": "Escuro",
     "language": "Idioma",
-    "language_value_pt_br": "Português (Brasil)"
+    "language_value_pt_br": "Português (Brasil)",
+    "tts_speed": "Velocidade da voz",
+    "tts_speed_slow": "Devagar",
+    "tts_speed_normal": "Normal",
+    "tts_speed_fast": "Rápida"
   },
   "alerta": {
     "status": {
@@ -119,6 +151,12 @@
       "risco": "Risco",
       "perdida": "Perdida"
     }
+  },
+  "sync": {
+    "offline": "Sem conexão",
+    "offline_com_pendentes": "Sem conexão · {{count}} pendente(s)",
+    "pendentes": "{{count}} pendente(s) pra sincronizar",
+    "sincronizando": "Sincronizando..."
   },
   "common": {
     "retry": "Tentar de novo",

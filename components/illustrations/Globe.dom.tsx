@@ -5,7 +5,11 @@
 // Interativo: drag horizontal (touch ou mouse) rotaciona o globo no eixo
 // phi. Theta (inclinacao N-S) fica fixo. Marker laranja apontado pra
 // coordenadas do usuario (default Sao Paulo).
-// Globo 3D draggable: drag horizontal gira no eixo phi.
+//
+// Inercia ao soltar: rastreia velocidade angular durante o drag (EMA pra
+// evitar spike no ultimo frame) e continua girando com damping
+// exponencial framerate-independent ate parar.
+// Globo 3D draggable com inercia: drag gira no eixo phi e continua.
 
 "use dom";
 
@@ -22,7 +26,15 @@ export interface GlobeProps {
 
 const INITIAL_PHI = 5.5;
 const INITIAL_THETA = 0.3;
-const DRAG_SENSITIVITY = 200;
+const DRAG_SENSITIVITY = 500;
+// Inercia: damping por 16ms (1 frame @60fps). 0.96 = ~3s de spin
+// suave; mais alto = gira mais longe; mais baixo = para rapido.
+const INERTIA_DAMPING_PER_FRAME = 0.96;
+// Velocidade angular (rad/ms) abaixo desse threshold conta como parado.
+const INERTIA_MIN_VELOCITY = 0.00002;
+// Peso da velocidade nova no EMA — 0.3 suaviza spikes do ultimo
+// pointermove (comum em touch screens quando o dedo levanta).
+const VELOCITY_SMOOTHING = 0.3;
 
 export default function Globe({
   size = 324,
@@ -39,6 +51,14 @@ export default function Globe({
   // Movimento ativo durante o drag (delta clientX / sensitivity).
   // Quando o drag termina, este valor eh acumulado em phiRef.
   const activeMovementRef = useRef(0);
+  // Tracking de velocidade pra inercia: ultimo pointermove (x + t)
+  // e velocidade angular suavizada via EMA durante o drag.
+  const lastMoveXRef = useRef<number | null>(null);
+  const lastMoveTimeRef = useRef<number | null>(null);
+  const velocityRef = useRef(0); // rad/ms
+  // Handle do rAF da inercia — usado pra cancelar se rolar novo drag
+  // ou unmount durante o spin.
+  const inertiaFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -67,16 +87,59 @@ export default function Globe({
       },
     });
     return () => {
+      // Cancela inercia em curso antes de destruir o globo pra evitar
+      // que o tick rode em ref sem canvas montado.
+      if (inertiaFrameRef.current !== null) {
+        cancelAnimationFrame(inertiaFrameRef.current);
+        inertiaFrameRef.current = null;
+      }
       globe.destroy();
     };
   }, [size, markerLat, markerLng]);
 
+  // Cancela qualquer rAF de inercia em andamento — chamado ao iniciar
+  // novo drag ou no unmount.
+  const cancelInertia = () => {
+    if (inertiaFrameRef.current !== null) {
+      cancelAnimationFrame(inertiaFrameRef.current);
+      inertiaFrameRef.current = null;
+    }
+  };
+
+  // Anima o globo com damping exponencial framerate-independent.
+  // Math.pow(damping, dt/16) garante que a desaceleracao seja igual
+  // em 60fps, 120fps ou rAF irregular — sem isso, telas mais rapidas
+  // parariam o globo antes.
+  const startInertia = () => {
+    let lastFrameTime = performance.now();
+    const tick = () => {
+      const now = performance.now();
+      const dt = now - lastFrameTime;
+      lastFrameTime = now;
+
+      phiRef.current += velocityRef.current * dt;
+      velocityRef.current *= Math.pow(INERTIA_DAMPING_PER_FRAME, dt / 16);
+
+      if (Math.abs(velocityRef.current) > INERTIA_MIN_VELOCITY) {
+        inertiaFrameRef.current = requestAnimationFrame(tick);
+      } else {
+        velocityRef.current = 0;
+        inertiaFrameRef.current = null;
+      }
+    };
+    inertiaFrameRef.current = requestAnimationFrame(tick);
+  };
+
   // Handlers de drag horizontal:
-  // - pointerdown: marca o ponto inicial e muda cursor pra "grabbing".
-  // - pointermove: calcula delta clientX / sensitivity, atualiza ref.
-  // - pointerup/leave: commita o movimento em phiRef, reseta active.
+  // - pointerdown: marca ponto inicial, cancela inercia anterior, prepara tracking.
+  // - pointermove: atualiza activeMovement + suaviza velocidade (EMA).
+  // - pointerup/leave/cancel: commita movimento em phi, dispara inercia.
   const handlePointerDown = (clientX: number) => {
+    cancelInertia();
     pointerStartRef.current = clientX;
+    lastMoveXRef.current = clientX;
+    lastMoveTimeRef.current = performance.now();
+    velocityRef.current = 0;
     if (canvasRef.current) canvasRef.current.style.cursor = "grabbing";
   };
 
@@ -84,15 +147,35 @@ export default function Globe({
     if (pointerStartRef.current === null) return;
     const delta = clientX - pointerStartRef.current;
     activeMovementRef.current = delta / DRAG_SENSITIVITY;
+
+    // Atualiza velocidade angular via EMA — suaviza spikes do ultimo
+    // pointermove e da uma sensacao mais natural de "peso" pro globo.
+    const now = performance.now();
+    if (lastMoveXRef.current !== null && lastMoveTimeRef.current !== null) {
+      const dt = now - lastMoveTimeRef.current;
+      if (dt > 0) {
+        const dxAngular = (clientX - lastMoveXRef.current) / DRAG_SENSITIVITY;
+        const instantVelocity = dxAngular / dt; // rad/ms
+        velocityRef.current =
+          velocityRef.current * (1 - VELOCITY_SMOOTHING) +
+          instantVelocity * VELOCITY_SMOOTHING;
+      }
+    }
+    lastMoveXRef.current = clientX;
+    lastMoveTimeRef.current = now;
   };
 
   const handlePointerEnd = () => {
     if (pointerStartRef.current === null) return;
-    // Commit do movimento ativo em phiRef pra proximo drag comecar daqui.
     phiRef.current += activeMovementRef.current;
     activeMovementRef.current = 0;
     pointerStartRef.current = null;
+    lastMoveXRef.current = null;
+    lastMoveTimeRef.current = null;
     if (canvasRef.current) canvasRef.current.style.cursor = "grab";
+    if (Math.abs(velocityRef.current) > INERTIA_MIN_VELOCITY) {
+      startInertia();
+    }
   };
 
   return (
