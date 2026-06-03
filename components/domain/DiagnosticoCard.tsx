@@ -1,12 +1,6 @@
-// DiagnosticoCard — resultado da inferencia "Olho na Folha".
-// Mantem a linguagem editorial do AlertCardHero (hero number Manrope
-// thin + kicker caps + divider + body curto), adaptada pra tela cheia
-// de resultado: thumbnail da foto no topo, % confianca como hero,
-// nome da praga como manchete, recomendacao em voz Seu Joao, e 3
-// acoes (ouvir resultado, falar agronomo, tirar outra foto).
-// Card do diagnostico: foto + confianca + praga + recomendacao + acoes.
+// DiagnosticoCard — resultado editorial da inferência "Olho na Folha".
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { Image, Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -43,7 +37,7 @@ export function DiagnosticoCard({
 }: DiagnosticoCardProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const styles = createStyles(colors);
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const palette = alertaSeveridadePalette[diagnostico.severidade];
   const isSadia = diagnostico.praga === "sadia";
@@ -157,12 +151,12 @@ function createStyles(c: ThemeColors) {
       paddingBottom: spacing.xl,
     },
     thumbWrap: {
-      width: 88,
-      height: 88,
-      borderRadius: radius.xl,
+      width: 72,
+      height: 72,
+      borderRadius: radius.lg,
       overflow: "hidden",
-      marginBottom: spacing.lg,
-      borderWidth: 1,
+      marginBottom: spacing.md,
+      borderWidth: StyleSheet.hairlineWidth,
       borderColor: c.border,
     },
     thumb: {
@@ -170,77 +164,77 @@ function createStyles(c: ThemeColors) {
       height: "100%",
     },
     hero: {
-      fontFamily: fontFamily.medium,
-      fontSize: 100,
-      lineHeight: 88,
-      letterSpacing: -5,
+      fontFamily: fontFamily.light,
+      fontSize: 88,
+      lineHeight: 78,
+      letterSpacing: -4.5,
     },
     heroSuffix: {
-      fontFamily: fontFamily.medium,
-      fontSize: 36,
+      fontFamily: fontFamily.light,
+      fontSize: 32,
       letterSpacing: -1.5,
     },
     kicker: {
       fontFamily: fontFamily.semibold,
-      fontSize: 11,
+      fontSize: 10,
       letterSpacing: 4,
       marginTop: spacing.xs,
       textTransform: "uppercase",
       color: c.text,
     },
     divider: {
-      width: 160,
-      height: 1,
+      width: 120,
+      height: StyleSheet.hairlineWidth,
       marginTop: spacing.md,
       marginBottom: spacing.md,
     },
     pragaLabel: {
       fontFamily: fontFamily.semibold,
-      fontSize: 26,
-      lineHeight: 30,
-      letterSpacing: -0.5,
+      fontSize: 22,
+      lineHeight: 26,
+      letterSpacing: -0.4,
       color: c.text,
-      marginBottom: spacing.md,
+      marginBottom: spacing.sm,
     },
     body: {
       fontFamily: fontFamily.regular,
-      fontSize: 15,
-      lineHeight: 22,
+      fontSize: 14,
+      lineHeight: 21,
       letterSpacing: -0.1,
       color: c.text,
-      paddingRight: 20,
+      paddingRight: spacing.xl,
     },
     meta: {
       fontFamily: fontFamily.light,
       fontSize: 9,
       letterSpacing: 1.5,
       color: c.textMuted,
-      marginTop: spacing.lg,
+      marginTop: spacing.md,
       textTransform: "uppercase",
     },
     actions: {
       flexDirection: "row",
       flexWrap: "wrap",
       gap: spacing.sm,
-      marginTop: spacing["2xl"],
+      marginTop: spacing.xl,
     },
     actionPill: {
       flexDirection: "row",
       alignItems: "center",
-      gap: spacing.sm,
-      paddingVertical: spacing.md - 2,
-      paddingHorizontal: spacing.lg,
+      gap: spacing.xs + 2,
+      paddingVertical: spacing.sm + 1,
+      paddingHorizontal: spacing.md + 2,
       borderRadius: radius.pill,
-      borderWidth: 1,
+      borderWidth: StyleSheet.hairlineWidth,
       borderColor: c.borderStrong,
       backgroundColor: "transparent",
     },
     actionPillPrimary: {
       flexDirection: "row",
       alignItems: "center",
-      gap: spacing.sm,
-      paddingVertical: spacing.md - 2,
-      paddingHorizontal: spacing.lg,
+      gap: spacing.xs + 2,
+      paddingVertical: spacing.sm + 1,
+      paddingHorizontal: spacing.md + 2,
       borderRadius: radius.pill,
       backgroundColor: c.primary,
     },
@@ -249,24 +243,24 @@ function createStyles(c: ThemeColors) {
       transform: [{ scale: 0.98 }],
     },
     actionLabel: {
-      fontFamily: fontFamily.semibold,
-      fontSize: 14,
+      fontFamily: fontFamily.medium,
+      fontSize: 13,
       color: c.text,
     },
     actionLabelPrimary: {
-      fontFamily: fontFamily.semibold,
-      fontSize: 14,
+      fontFamily: fontFamily.medium,
+      fontSize: 13,
       color: c.primaryText,
     },
     retakeRow: {
       flexDirection: "row",
       alignItems: "center",
       gap: spacing.xs,
-      marginTop: spacing.xl,
+      marginTop: spacing.lg,
     },
     retakeLabel: {
       fontFamily: fontFamily.regular,
-      fontSize: 13,
+      fontSize: 12,
       color: c.textMuted,
       textDecorationLine: "underline",
     },
