@@ -17,6 +17,7 @@ export const queryKeys = {
   lavouras: ["lavouras"] as const,
   lavoura: (id: string) => ["lavoura", id] as const,
   alertas: ["alertas"] as const,
+  alerta: (id: string) => ["alerta", id] as const,
   alertaAtual: ["alerta-atual"] as const,
 } as const;
 
@@ -63,6 +64,18 @@ export function useAlertas(
   return useQuery({
     queryKey: queryKeys.alertas,
     queryFn: () => api.listAlertas(),
+    ...options,
+  });
+}
+
+export function useAlerta(
+  id: string,
+  options?: Partial<UseQueryOptions<Alerta | null>>,
+) {
+  return useQuery({
+    queryKey: queryKeys.alerta(id),
+    queryFn: () => api.getAlerta(id),
+    enabled: !!id,
     ...options,
   });
 }

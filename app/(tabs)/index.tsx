@@ -20,7 +20,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import * as Speech from "expo-speech";
 import { useTranslation } from "react-i18next";
 
 import { AppBackground } from "@/components/ui/AppBackground";

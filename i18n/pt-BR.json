@@ -9,9 +9,14 @@
   "auth": {
     "welcome": "Sua roça,\nno espaço.",
     "subtitle": "Tecnologia espacial pra quem alimenta o Brasil.",
-    "sign_in": "Entrar como Seu João",
+    "email_label": "Email",
+    "email_placeholder": "seu@email.com",
+    "senha_label": "Senha",
+    "senha_placeholder": "Sua senha",
+    "sign_in": "Entrar",
     "signing_in": "Entrando...",
-    "error": "Não foi possível entrar. Tente de novo."
+    "error": "Não foi possível entrar. Tente de novo.",
+    "demo_hint": "Demo: qualquer email e senha com 6+ caracteres"
   },
   "home": {
     "welcome": "Bom dia,\n{{name}}",
@@ -112,7 +117,16 @@
   },
   "alerta_detail": {
     "coming_soon_title": "Em breve",
-    "coming_soon_description": "Detalhes completos do alerta, leitura por áudio e histórico. Disponível na próxima atualização."
+    "coming_soon_description": "Detalhes completos do alerta, leitura por áudio e histórico. Disponível na próxima atualização.",
+    "probabilidade_label": "Probabilidade",
+    "janela_label": "Janela de risco",
+    "janela_dias": "próximos {{count}} dias",
+    "recomendacao_label": "Recomendação",
+    "listen_button": "Ouvir alerta",
+    "not_found_title": "Alerta não encontrado",
+    "not_found_description": "Não foi possível carregar os detalhes deste alerta.",
+    "fonte_label": "Fonte dos dados",
+    "fonte_descricao": "Dados de satélites meteorológicos (NASA POWER / CPTEC-INPE) processados por modelo de machine learning."
   },
   "profile": {
     "title": "Perfil",
@@ -171,5 +185,14 @@
     "hours_ago": "há {{count}}h",
     "days_ago": "ontem",
     "days_ago_plural": "há {{count}} dias"
+  },
+  "validation": {
+    "email_required": "Informe seu email.",
+    "email_invalid": "Email inválido.",
+    "password_required": "Informe sua senha.",
+    "password_too_short": "Senha precisa ter pelo menos {{count}} caracteres.",
+    "required": "Campo {{field}} obrigatório.",
+    "name_required": "Informe seu nome.",
+    "name_short": "Nome muito curto."
   }
 }

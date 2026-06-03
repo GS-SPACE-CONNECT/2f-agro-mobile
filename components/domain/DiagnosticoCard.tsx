@@ -6,12 +6,13 @@
 // acoes (ouvir resultado, falar agronomo, tirar outra foto).
 // Card do diagnostico: foto + confianca + praga + recomendacao + acoes.
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { Image, Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "@/context/ThemeContext";
+import { hexToRgba } from "@/lib/color";
 import { haptic } from "@/lib/haptics";
 import type { DiagnosticoPraga } from "@/lib/types";
 import {
@@ -21,14 +22,6 @@ import {
   spacing,
   type ThemeColors,
 } from "@/lib/theme";
-
-function hexToRgba(hex: string, alpha: number): string {
-  const clean = hex.startsWith("#") ? hex.slice(1) : hex;
-  const r = parseInt(clean.slice(0, 2), 16);
-  const g = parseInt(clean.slice(2, 4), 16);
-  const b = parseInt(clean.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
 
 export interface DiagnosticoCardProps {
   diagnostico: DiagnosticoPraga;
@@ -43,7 +36,7 @@ export function DiagnosticoCard({
 }: DiagnosticoCardProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const styles = createStyles(colors);
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const palette = alertaSeveridadePalette[diagnostico.severidade];
   const isSadia = diagnostico.praga === "sadia";

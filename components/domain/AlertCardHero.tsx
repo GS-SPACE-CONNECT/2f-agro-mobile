@@ -8,12 +8,13 @@
 //   6. Meta caps Light com bullet separador
 // Manrope thin = estetica Apple/Linear/Vercel premium.
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "@/context/ThemeContext";
+import { hexToRgba } from "@/lib/color";
 import { haptic } from "@/lib/haptics";
 import type { Alerta } from "@/lib/types";
 import {
@@ -24,19 +25,6 @@ import {
   type ThemeColors,
 } from "@/lib/theme";
 
-/**
- * Converte hex (#RRGGBB) pra rgba com alpha. Usado pra deixar
- * o numero hero translucido (white em dark, black em light) sem
- * depender de opacity prop que falha em alguns paths do RN web.
- */
-function hexToRgba(hex: string, alpha: number): string {
-  const clean = hex.startsWith("#") ? hex.slice(1) : hex;
-  const r = parseInt(clean.slice(0, 2), 16);
-  const g = parseInt(clean.slice(2, 4), 16);
-  const b = parseInt(clean.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
 export interface AlertCardHeroProps {
   alerta: Alerta | null;
   onListen?: (alerta: Alerta) => void;
@@ -46,7 +34,7 @@ export interface AlertCardHeroProps {
 export function AlertCardHero({ alerta, onListen, onPress }: AlertCardHeroProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const styles = createStyles(colors);
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const handleListen = useCallback(() => {
     if (!alerta) return;
