@@ -28,6 +28,7 @@ import Globe from "@/components/illustrations/Globe.dom";
 import { RotatingClock } from "@/components/illustrations/RotatingClock";
 import { AlertCardHero } from "@/components/domain/AlertCardHero";
 import { AlertCardHeroSkeleton } from "@/components/domain/AlertCardHeroSkeleton";
+import { ClimaCard } from "@/components/domain/ClimaCard";
 import { LavouraRow } from "@/components/domain/LavouraRow";
 import { LavouraRowSkeleton } from "@/components/domain/LavouraRowSkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -35,7 +36,7 @@ import { ErrorBanner } from "@/components/ui/ErrorBanner";
 import { useTheme } from "@/context/ThemeContext";
 import { useTTS } from "@/context/TTSContext";
 import { useUserLocation } from "@/context/UserLocationContext";
-import { useLavouras, useAlertaAtual } from "@/hooks/useQueries";
+import { useLavouras, useAlertaAtual, useClimaSatelite } from "@/hooks/useQueries";
 import { haptic } from "@/lib/haptics";
 import { speak } from "@/lib/tts";
 import type { Alerta, Lavoura } from "@/lib/types";
@@ -99,6 +100,11 @@ export default function HomeScreen() {
   const lavourasQuery = useLavouras();
   const alertaQuery = useAlertaAtual();
 
+  // Dados climáticos reais do satélite (NASA POWER API)
+  const markerLat = propriedade?.lat ?? -8.2839;
+  const markerLng = propriedade?.lng ?? -35.9758;
+  const climaQuery = useClimaSatelite(markerLat, markerLng);
+
   const lavouras = lavourasQuery.data ?? [];
   const alerta = alertaQuery.data ?? null;
   const initialLoading =
@@ -131,8 +137,6 @@ export default function HomeScreen() {
   }, []);
 
   const displayName = propriedade?.donoNome ?? "";
-  const markerLat = propriedade?.lat ?? -8.2839;
-  const markerLng = propriedade?.lng ?? -35.9758;
 
   const retryAll = useCallback(() => {
     void lavourasQuery.refetch();
@@ -170,6 +174,9 @@ export default function HomeScreen() {
                 )}
               </View>
             </View>
+            {climaQuery.data ? (
+              <ClimaCard dados={climaQuery.data} />
+            ) : null}
             {error && lavouras.length > 0 ? (
               <View style={styles.errorWrap}>
                 <ErrorBanner message={error} onRetry={retryAll} />

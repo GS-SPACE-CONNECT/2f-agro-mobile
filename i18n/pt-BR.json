@@ -194,6 +194,13 @@
     "area_invalid": "Área deve ser um número maior que zero.",
     "cultura_required": "Selecione uma cultura."
   },
+  "clima": {
+    "kicker": "CLIMA SATELITAL",
+    "temperatura": "Temperatura",
+    "precipitacao": "Chuva",
+    "radiacao": "Radiação solar",
+    "fonte": "NASA POWER \u00b7 leitura de {{dias}} dia(s) atr\u00e1s"
+  },
   "common": {
     "retry": "Tentar de novo",
     "back": "Voltar",

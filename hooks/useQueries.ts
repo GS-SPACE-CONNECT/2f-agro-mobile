@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
+import { buscarClimaSatelite, type DadosClimaSatelite } from "@/lib/nasa-power";
 import type { Alerta, CriarLavouraRequest, Lavoura, Propriedade } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -23,6 +24,8 @@ export const queryKeys = {
   lavoura: (id: string) => ["lavoura", id] as const,
   alertas: ["alertas"] as const,
   alertaAtual: ["alerta-atual"] as const,
+  climaSatelite: (lat: number, lng: number) =>
+    ["clima-satelite", lat, lng] as const,
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -78,6 +81,22 @@ export function useAlertaAtual(
   return useQuery({
     queryKey: queryKeys.alertaAtual,
     queryFn: () => api.getCurrentAlert(),
+    ...options,
+  });
+}
+
+/** Dados climáticos reais da NASA POWER — endpoint público, sem auth. */
+export function useClimaSatelite(
+  lat: number,
+  lng: number,
+  options?: Partial<UseQueryOptions<DadosClimaSatelite>>,
+) {
+  return useQuery({
+    queryKey: queryKeys.climaSatelite(lat, lng),
+    queryFn: () => buscarClimaSatelite(lat, lng),
+    staleTime: 1000 * 60 * 60, // 1h — dados diários mudam pouco
+    retry: 2,
+    enabled: lat !== 0 && lng !== 0,
     ...options,
   });
 }
