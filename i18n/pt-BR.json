@@ -158,6 +158,42 @@
     "pendentes": "{{count}} pendente(s) pra sincronizar",
     "sincronizando": "Sincronizando..."
   },
+  "lavoura_form": {
+    "title_criar": "Nova lavoura",
+    "title_editar": "Editar lavoura",
+    "cultura_label": "Cultura",
+    "cultura_placeholder": "Selecione a cultura",
+    "identificador_label": "Identificador",
+    "identificador_placeholder": "Ex: L7",
+    "area_label": "Área (hectares)",
+    "area_placeholder": "Ex: 2.5",
+    "salvar": "Salvar lavoura",
+    "salvando": "Salvando...",
+    "sucesso_criar": "Lavoura criada com sucesso.",
+    "sucesso_editar": "Lavoura atualizada.",
+    "erro": "Não foi possível salvar. Tente de novo."
+  },
+  "lavoura_crud": {
+    "editar": "Editar",
+    "remover": "Remover lavoura",
+    "remover_titulo": "Remover lavoura?",
+    "remover_mensagem": "Essa ação não pode ser desfeita. A lavoura \"{{nome}}\" será removida.",
+    "remover_confirmar": "Remover",
+    "remover_sucesso": "Lavoura removida."
+  },
+  "validation": {
+    "email_required": "Informe o e-mail.",
+    "email_invalid": "E-mail inválido.",
+    "password_required": "Informe a senha.",
+    "password_too_short": "A senha deve ter pelo menos {{count}} caracteres.",
+    "required": "Campo obrigatório.",
+    "name_required": "Informe o nome.",
+    "name_short": "Nome muito curto.",
+    "identificador_required": "Informe o identificador da lavoura.",
+    "area_required": "Informe a área em hectares.",
+    "area_invalid": "Área deve ser um número maior que zero.",
+    "cultura_required": "Selecione uma cultura."
+  },
   "common": {
     "retry": "Tentar de novo",
     "back": "Voltar",

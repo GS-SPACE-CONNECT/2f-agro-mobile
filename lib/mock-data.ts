@@ -7,6 +7,8 @@
 import type {
   AcaoRecomendada,
   Alerta,
+  CriarLavouraRequest,
+  CulturaTipo,
   DiagnosticoPraga,
   Lavoura,
   LavouraDetalhe,
@@ -15,6 +17,20 @@ import type {
   PragaTipo,
   Propriedade,
 } from "./types";
+
+// =====================
+// Labels de cultura (PT-BR) — usado pelo CRUD mock
+// =====================
+
+export const CULTURA_LABELS: Record<CulturaTipo, string> = {
+  milho: "Milho",
+  tomate: "Tomate",
+  alface: "Alface",
+  feijao: "Feijão",
+  mandioca: "Mandioca",
+  soja: "Soja",
+  cana: "Cana-de-açúcar",
+};
 
 export const PROPRIEDADE: Propriedade = {
   id: "prop-1",
@@ -184,22 +200,42 @@ export const PRAGAS_DETECTAVEIS: PragaTemplate[] = [
       "Pulverize fungicida nas próximas 48 horas. Comece pelas folhas baixeiras.",
     agronomoTelefone: "+5581999990000",
   },
-  // TODO(jota): +3 a 6 entradas. Sugestoes pra preencher:
-  //   - lagarta_do_cartucho   (milho, severidade: alto)
-  //   - mancha_foliar         (varias, severidade: medio)
-  //   - oidio                 (tomate/alface, severidade: medio)
-  //   - mosca_branca          (tomate, severidade: alto)
-  //   - antracnose            (feijao/mandioca, severidade: medio)
-  //
-  // Modelo:
-  // {
-  //   praga: "lagarta_do_cartucho",
-  //   pragaLabel: "Lagarta-do-cartucho",
-  //   confianca: 0.79,
-  //   severidade: "alto",
-  //   recomendacao: "...",
-  //   agronomoTelefone: "+5581999990000",
-  // },
+  {
+    praga: "lagarta_do_cartucho",
+    pragaLabel: "Lagarta-do-cartucho",
+    confianca: 0.79,
+    severidade: "alto",
+    recomendacao:
+      "Aplique inseticida biológico (Bt) no milho. Priorize as folhas do cartucho.",
+    agronomoTelefone: "+5581999990000",
+  },
+  {
+    praga: "mancha_foliar",
+    pragaLabel: "Mancha foliar",
+    confianca: 0.72,
+    severidade: "medio",
+    recomendacao:
+      "Remova as folhas afetadas e evite irrigação por aspersão por 3 dias.",
+    agronomoTelefone: "+5581999990000",
+  },
+  {
+    praga: "oidio",
+    pragaLabel: "Oídio",
+    confianca: 0.83,
+    severidade: "medio",
+    recomendacao:
+      "Pulverize enxofre ou fungicida à base de cobre. Melhore a ventilação.",
+    agronomoTelefone: "+5581999990000",
+  },
+  {
+    praga: "mosca_branca",
+    pragaLabel: "Mosca-branca",
+    confianca: 0.76,
+    severidade: "alto",
+    recomendacao:
+      "Use armadilhas adesivas amarelas e aplique óleo de neem nas folhas.",
+    agronomoTelefone: "+5581999990000",
+  },
 ];
 
 /**
@@ -451,4 +487,59 @@ export function getDetalheLavoura(id: string): LavouraDetalhe | null {
     alertas,
     acoesRecomendadas: ACOES[id] ?? [],
   };
+}
+
+/** Retorna um alerta por ID. */
+export function getAlerta(id: string): Alerta | null {
+  return ALERTAS.find((a) => a.id === id) ?? null;
+}
+
+// =====================
+// CRUD mock — mutação in-memory pra demo Sprint 1
+// =====================
+
+let _nextId = 100;
+
+/** Cria uma lavoura nova no array mock. Retorna o objeto criado. */
+export function adicionarLavouraMock(data: CriarLavouraRequest): Lavoura {
+  const nova: Lavoura = {
+    id: `lav-${++_nextId}`,
+    propriedadeId: data.propriedadeId,
+    cultura: data.cultura,
+    culturaLabel: CULTURA_LABELS[data.cultura],
+    identificador: data.identificador,
+    areaHectares: data.areaHectares,
+    saude: data.saude ?? "saudavel",
+    ndviAtual: data.ndviAtual ?? 0.5,
+    ultimaLeitura: new Date().toISOString(),
+    criadoEm: new Date().toISOString(),
+  };
+  LAVOURAS.push(nova);
+  return nova;
+}
+
+/** Atualiza uma lavoura existente no array mock. */
+export function atualizarLavouraMock(
+  id: string,
+  data: CriarLavouraRequest,
+): Lavoura {
+  const idx = LAVOURAS.findIndex((l) => l.id === id);
+  if (idx === -1) throw new Error(`Lavoura ${id} não encontrada`);
+  const atualizada: Lavoura = {
+    ...LAVOURAS[idx],
+    cultura: data.cultura,
+    culturaLabel: CULTURA_LABELS[data.cultura],
+    identificador: data.identificador,
+    areaHectares: data.areaHectares,
+    saude: data.saude ?? LAVOURAS[idx].saude,
+    ultimaLeitura: new Date().toISOString(),
+  };
+  LAVOURAS[idx] = atualizada;
+  return atualizada;
+}
+
+/** Remove uma lavoura do array mock. */
+export function removerLavouraMock(id: string): void {
+  const idx = LAVOURAS.findIndex((l) => l.id === id);
+  if (idx !== -1) LAVOURAS.splice(idx, 1);
 }

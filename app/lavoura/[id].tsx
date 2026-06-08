@@ -4,6 +4,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -22,13 +23,16 @@ import { LavouraStatusBadge } from "@/components/ui/LavouraStatusBadge";
 import { AlertSeverityBadge } from "@/components/ui/AlertSeverityBadge";
 import { NdviChart } from "@/components/domain/NdviChart";
 import { useTheme } from "@/context/ThemeContext";
+import { useRemoverLavoura } from "@/hooks/useQueries";
 import { api } from "@/lib/api";
+import { haptic } from "@/lib/haptics";
 import { formatRelativeTime } from "@/lib/relative-time";
 import type { Alerta, LavouraDetalhe } from "@/lib/types";
 import {
   alertaSeveridadePalette,
   fontFamily,
   lavouraSaudePalette,
+  radius,
   spacing,
   typography,
   type ThemeColors,
@@ -58,6 +62,7 @@ export default function LavouraDetailScreen() {
 
   const [detalhe, setDetalhe] = useState<LavouraDetalhe | null>(null);
   const [loading, setLoading] = useState(true);
+  const removerMutation = useRemoverLavoura();
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -218,6 +223,59 @@ export default function LavouraDetailScreen() {
             </View>
           </View>
         ))}
+
+        {/* ── CRUD: Editar / Remover ── */}
+        <View style={styles.separator} />
+        <View style={styles.crudRow}>
+          <Pressable
+            onPress={() => {
+              haptic.light();
+              router.push(`/lavoura/nova?id=${detalhe.id}` as never);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={t("lavoura_crud.editar")}
+            style={({ pressed }) => [styles.crudBtn, pressed && styles.crudBtnPressed]}
+          >
+            <Ionicons name="create-outline" size={18} color={colors.text} />
+            <Text style={styles.crudBtnLabel}>{t("lavoura_crud.editar")}</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => {
+              Alert.alert(
+                t("lavoura_crud.remover_titulo"),
+                t("lavoura_crud.remover_mensagem", { nome: detalhe.identificador }),
+                [
+                  { text: t("common.cancel"), style: "cancel" },
+                  {
+                    text: t("lavoura_crud.remover_confirmar"),
+                    style: "destructive",
+                    onPress: () => {
+                      removerMutation.mutate(detalhe.id, {
+                        onSuccess: () => {
+                          haptic.success();
+                          router.back();
+                        },
+                      });
+                    },
+                  },
+                ],
+              );
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={t("lavoura_crud.remover")}
+            style={({ pressed }) => [
+              styles.crudBtn,
+              styles.crudBtnDanger,
+              pressed && styles.crudBtnPressed,
+            ]}
+          >
+            <Ionicons name="trash-outline" size={18} color={colors.error} />
+            <Text style={[styles.crudBtnLabel, { color: colors.error }]}>
+              {t("lavoura_crud.remover")}
+            </Text>
+          </Pressable>
+        </View>
       </ScrollView>
     </AppBackground>
   );
@@ -442,6 +500,36 @@ function createStyles(c: ThemeColors) {
       ...typography.caption,
       color: c.textMuted,
       marginTop: 2,
+    },
+
+    // CRUD
+    crudRow: {
+      flexDirection: "row",
+      gap: spacing.md,
+    },
+    crudBtn: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: spacing.sm,
+      paddingVertical: spacing.md,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: c.border,
+      backgroundColor: "transparent",
+    },
+    crudBtnDanger: {
+      borderColor: c.error,
+    },
+    crudBtnPressed: {
+      opacity: 0.7,
+      transform: [{ scale: 0.98 }],
+    },
+    crudBtnLabel: {
+      fontFamily: fontFamily.semibold,
+      fontSize: 14,
+      color: c.text,
     },
   });
 }

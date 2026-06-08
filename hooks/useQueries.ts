@@ -3,10 +3,15 @@
 // persistência offline e revalidação inteligente.
 // Telas consomem estes hooks em vez de chamar api.* diretamente.
 
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseQueryOptions,
+} from "@tanstack/react-query";
 
 import { api } from "@/lib/api";
-import type { Alerta, Lavoura, Propriedade } from "@/lib/types";
+import type { Alerta, CriarLavouraRequest, Lavoura, Propriedade } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
 // Query keys centralizadas (facilita invalidação e testes)
@@ -74,5 +79,41 @@ export function useAlertaAtual(
     queryKey: queryKeys.alertaAtual,
     queryFn: () => api.getCurrentAlert(),
     ...options,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Mutations — CRUD de Lavouras
+// ---------------------------------------------------------------------------
+
+export function useCriarLavoura() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CriarLavouraRequest) => api.criarLavoura(data),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.lavouras });
+    },
+  });
+}
+
+export function useAtualizarLavoura() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: CriarLavouraRequest }) =>
+      api.atualizarLavoura(id, data),
+    onSuccess: (_result, { id }) => {
+      void qc.invalidateQueries({ queryKey: queryKeys.lavouras });
+      void qc.invalidateQueries({ queryKey: queryKeys.lavoura(id) });
+    },
+  });
+}
+
+export function useRemoverLavoura() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.removerLavoura(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.lavouras });
+    },
   });
 }

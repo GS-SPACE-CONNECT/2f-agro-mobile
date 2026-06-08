@@ -86,19 +86,24 @@ const mockApi = {
     return mock.gerarDiagnosticoMock(fotoUri, lavouraId);
   },
 
-  // Métodos novos — stub mock pra manter interface unificada
-  async criarLavoura(_data: CriarLavouraRequest): Promise<Lavoura> {
+  async criarLavoura(data: CriarLavouraRequest): Promise<Lavoura> {
     await delay(FAKE_LATENCY_MS);
-    return mock.LAVOURAS[0];
+    return mock.adicionarLavouraMock(data);
   },
 
-  async atualizarLavoura(_id: string, _data: CriarLavouraRequest): Promise<Lavoura> {
+  async atualizarLavoura(id: string, data: CriarLavouraRequest): Promise<Lavoura> {
     await delay(FAKE_LATENCY_MS);
-    return mock.LAVOURAS[0];
+    return mock.atualizarLavouraMock(id, data);
   },
 
-  async removerLavoura(_id: string): Promise<void> {
+  async removerLavoura(id: string): Promise<void> {
     await delay(FAKE_LATENCY_MS);
+    mock.removerLavouraMock(id);
+  },
+
+  async getAlerta(id: string): Promise<Alerta | null> {
+    await delay(FAKE_LATENCY_MS);
+    return mock.getAlerta(id);
   },
 
   async getDiagnostico(_id: string): Promise<DiagnosticoPraga | null> {
@@ -252,6 +257,15 @@ const realApi = {
   },
 
   // ========== Alertas ==========
+
+  async getAlerta(id: string): Promise<Alerta | null> {
+    try {
+      return await request<Alerta>(`/api/alertas/${id}`);
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 404) return null;
+      throw e;
+    }
+  },
 
   async confirmarAlerta(id: string): Promise<void> {
     return request<void>(`/api/alertas/${id}/confirmar`, {

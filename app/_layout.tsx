@@ -121,6 +121,7 @@ function RootStack() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ title: "" }} />
           <Stack.Screen name="lavoura/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="lavoura/nova" options={{ headerShown: false }} />
           <Stack.Screen name="alerta/[id]" options={{ headerShown: false }} />
         </Stack>
       )}
