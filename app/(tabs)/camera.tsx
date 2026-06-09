@@ -1,12 +1,4 @@
-// Camera "Olho na Folha" — fluxo:
-//   1. Estado inicial: requestar permissao da camera (expo-camera 55).
-//   2. Permissao negada: tela amigavel com botao pra abrir Settings.
-//   3. Permissao OK: CameraView com botao shutter centralizado embaixo.
-//   4. Foto tirada: spinner "Analisando a folha" (api.diagnosticarFolha).
-//   5. Resultado: DiagnosticoCard (foto + praga + confianca + acoes).
-// Acessibilidade: textos curtos, fonte 16pt+, contraste WCAG AA. Audio
-// (TTS) plugado quando issue #7 fechar — handler ja existe.
-// Tela camera: permissao -> captura -> inferencia -> resultado.
+// Tela Câmera "Olho na Folha" — permissão → captura → inferência → resultado.
 
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
@@ -256,7 +248,16 @@ export default function CameraScreen() {
         style={StyleSheet.absoluteFill}
         facing="back"
       />
-      {/* Overlay editorial: hint no topo, shutter no fim, safe areas. */}
+
+      {/* Guias de enquadramento — 4 cantos L */}
+      <View style={styles.framingGuide} pointerEvents="none">
+        <View style={[styles.corner, styles.cornerTL]} />
+        <View style={[styles.corner, styles.cornerTR]} />
+        <View style={[styles.corner, styles.cornerBL]} />
+        <View style={[styles.corner, styles.cornerBR]} />
+      </View>
+
+      {/* Hint glass pill no topo */}
       <View
         style={[
           styles.cameraOverlayTop,
@@ -266,6 +267,8 @@ export default function CameraScreen() {
       >
         <Text style={styles.cameraHint}>{t("camera.capture.hint")}</Text>
       </View>
+
+      {/* Gradiente sutil + shutter na zona do polegar */}
       <View
         style={[
           styles.cameraOverlayBottom,
@@ -289,6 +292,10 @@ export default function CameraScreen() {
     </View>
   );
 }
+
+const CORNER_SIZE = 32;
+const CORNER_THICKNESS = 2.5;
+const FRAME_INSET = 48;
 
 function createStyles(c: ThemeColors) {
   return StyleSheet.create({
@@ -319,21 +326,65 @@ function createStyles(c: ThemeColors) {
     },
     analyzingTitle: {
       fontFamily: fontFamily.semibold,
-      fontSize: 18,
+      fontSize: 20,
+      letterSpacing: -0.4,
       color: c.text,
-      marginTop: spacing.lg,
+      marginTop: spacing.xl,
     },
     analyzingBody: {
       fontFamily: fontFamily.regular,
-      fontSize: 14,
+      fontSize: 15,
+      lineHeight: 22,
       color: c.textMuted,
       textAlign: "center",
-      maxWidth: 260,
+      maxWidth: 280,
     },
     // ---- Camera fullscreen layout ----
     cameraRoot: {
       flex: 1,
       backgroundColor: "#000",
+    },
+    // Guias de enquadramento — 4 cantos L
+    framingGuide: {
+      ...StyleSheet.absoluteFillObject,
+      margin: FRAME_INSET,
+    },
+    corner: {
+      position: "absolute",
+      width: CORNER_SIZE,
+      height: CORNER_SIZE,
+    },
+    cornerTL: {
+      top: 0,
+      left: 0,
+      borderTopWidth: CORNER_THICKNESS,
+      borderLeftWidth: CORNER_THICKNESS,
+      borderColor: "rgba(255, 255, 255, 0.5)",
+      borderTopLeftRadius: 4,
+    },
+    cornerTR: {
+      top: 0,
+      right: 0,
+      borderTopWidth: CORNER_THICKNESS,
+      borderRightWidth: CORNER_THICKNESS,
+      borderColor: "rgba(255, 255, 255, 0.5)",
+      borderTopRightRadius: 4,
+    },
+    cornerBL: {
+      bottom: 0,
+      left: 0,
+      borderBottomWidth: CORNER_THICKNESS,
+      borderLeftWidth: CORNER_THICKNESS,
+      borderColor: "rgba(255, 255, 255, 0.5)",
+      borderBottomLeftRadius: 4,
+    },
+    cornerBR: {
+      bottom: 0,
+      right: 0,
+      borderBottomWidth: CORNER_THICKNESS,
+      borderRightWidth: CORNER_THICKNESS,
+      borderColor: "rgba(255, 255, 255, 0.5)",
+      borderBottomRightRadius: 4,
     },
     cameraOverlayTop: {
       position: "absolute",
@@ -344,15 +395,16 @@ function createStyles(c: ThemeColors) {
       paddingHorizontal: spacing.xl,
     },
     cameraHint: {
-      fontFamily: fontFamily.semibold,
-      fontSize: 13,
-      letterSpacing: 0.5,
-      color: "#FFFFFF",
-      backgroundColor: "rgba(0, 0, 0, 0.4)",
-      paddingVertical: spacing.sm,
+      fontFamily: fontFamily.medium,
+      fontSize: 12,
+      letterSpacing: 0.8,
+      color: "rgba(255, 255, 255, 0.9)",
+      backgroundColor: "rgba(0, 0, 0, 0.35)",
+      paddingVertical: spacing.sm - 1,
       paddingHorizontal: spacing.lg,
       borderRadius: radius.pill,
       overflow: "hidden",
+      textTransform: "uppercase",
     },
     cameraOverlayBottom: {
       position: "absolute",
@@ -361,25 +413,25 @@ function createStyles(c: ThemeColors) {
       right: 0,
       alignItems: "center",
     },
-    // Shutter classico: anel branco grosso + circulo interno solido.
     shutter: {
-      width: 78,
-      height: 78,
-      borderRadius: 39,
-      borderWidth: 4,
-      borderColor: "#FFFFFF",
+      width: 74,
+      height: 74,
+      borderRadius: 37,
+      borderWidth: 3.5,
+      borderColor: "rgba(255, 255, 255, 0.9)",
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: "transparent",
     },
     shutterInner: {
-      width: 62,
-      height: 62,
-      borderRadius: 31,
+      width: 60,
+      height: 60,
+      borderRadius: 30,
       backgroundColor: "#FFFFFF",
     },
     shutterPressed: {
-      transform: [{ scale: 0.94 }],
+      transform: [{ scale: 0.92 }],
+      opacity: 0.85,
     },
   });
 }

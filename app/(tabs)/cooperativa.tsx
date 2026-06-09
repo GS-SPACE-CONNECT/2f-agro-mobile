@@ -1,6 +1,4 @@
-// Tela Mapa — região da cooperativa. Mostra propriedades vizinhas com pinos
-// semafóricos (saúde da lavoura). Tap no pino abre callout com detalhes.
-// Filtros por tipo de evento (seca, praga, geada, etc). Tiles cacheados offline.
+// Tela Mapa — cooperativa regional com pinos semafóricos e filtros por evento.
 
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useMemo, useState } from "react";
@@ -27,6 +25,7 @@ import {
   fontFamily,
   fontSize,
   lavouraSaudePalette,
+  radius,
   spacing,
   type LavouraSaudeKey,
   type ThemeColors,
@@ -146,13 +145,18 @@ export default function MapaCooperativaScreen() {
 
       {/* Header sobreposto — glass, minimal */}
       <View style={[styles.headerOverlay, { paddingTop: insets.top + spacing.sm }]}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          {t("cooperativa.title")}
-        </Text>
+        <View style={styles.headerRow}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            {t("cooperativa.title")}
+          </Text>
+          <View style={[styles.countBadge, { backgroundColor: colors.glassBase, borderColor: colors.glassBorder }]}>
+            <Text style={[styles.countBadgeText, { color: colors.textMuted }]}>
+              {propriedadesFiltradas.length}
+            </Text>
+          </View>
+        </View>
         <Text style={[styles.headerSubtitle, { color: colors.textMuted }]}>
-          {t("cooperativa.properties_count", {
-            count: propriedadesFiltradas.length,
-          })}
+          {t("cooperativa.subtitle")}
         </Text>
       </View>
 
@@ -228,9 +232,9 @@ function LegendItem({
 }
 
 const legendStyles = StyleSheet.create({
-  row: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
-  dot: { width: 10, height: 10, borderRadius: 5, marginRight: 6 },
-  label: { fontFamily: fontFamily.regular, fontSize: fontSize.sm },
+  row: { flexDirection: "row", alignItems: "center", marginBottom: 3 },
+  dot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
+  label: { fontFamily: fontFamily.regular, fontSize: fontSize.xs, letterSpacing: 0.2 },
 });
 
 /** Callout customizado — glass minimal, sem card chrome pesado. */
@@ -300,63 +304,67 @@ function CalloutContent({
 
 const calloutStyles = StyleSheet.create({
   container: {
-    width: 240,
-    borderRadius: 12,
-    padding: 12,
+    width: 230,
+    borderRadius: 14,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.12,
-        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
       },
-      android: { elevation: 4 },
+      android: { elevation: 3 },
     }),
   },
   nome: {
     fontFamily: fontFamily.semibold,
     fontSize: fontSize.base,
-    marginBottom: 2,
+    letterSpacing: -0.2,
+    marginBottom: 1,
   },
   dono: {
     fontFamily: fontFamily.regular,
-    fontSize: fontSize.sm,
-    marginBottom: 8,
+    fontSize: fontSize.xs,
+    letterSpacing: 0.1,
+    marginBottom: spacing.sm,
   },
   statusRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: 2,
   },
   statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 6,
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    marginRight: 5,
   },
   statusText: {
     fontFamily: fontFamily.regular,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
+    letterSpacing: 0.1,
   },
   alertRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    marginTop: 8,
-    paddingTop: 8,
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
-    gap: 6,
+    gap: 5,
   },
   alertTextWrap: { flex: 1 },
   alertTipo: {
     fontFamily: fontFamily.semibold,
     fontSize: fontSize.xs,
-    letterSpacing: 0.5,
-    marginBottom: 2,
+    letterSpacing: 0.8,
+    marginBottom: 1,
   },
   alertReco: {
     fontFamily: fontFamily.regular,
-    fontSize: fontSize.sm,
-    lineHeight: 16,
+    fontSize: fontSize.xs,
+    lineHeight: 15,
   },
 });
 
@@ -373,16 +381,35 @@ function createStyles(colors: ThemeColors) {
       paddingHorizontal: spacing.xl,
       paddingBottom: spacing.sm,
       backgroundColor: colors.glassBase,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: colors.glassBorder,
+    },
+    headerRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.sm,
     },
     headerTitle: {
-      fontFamily: fontFamily.displaySemibold,
-      fontSize: fontSize["2xl"],
-      letterSpacing: -0.8,
+      fontFamily: fontFamily.semibold,
+      fontSize: fontSize.xl,
+      letterSpacing: -0.3,
+    },
+    countBadge: {
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 2,
+      borderRadius: radius.pill,
+      borderWidth: StyleSheet.hairlineWidth,
+    },
+    countBadgeText: {
+      fontFamily: fontFamily.medium,
+      fontSize: fontSize.xs,
+      letterSpacing: 0.2,
     },
     headerSubtitle: {
       fontFamily: fontFamily.regular,
-      fontSize: fontSize.sm,
-      marginTop: 2,
+      fontSize: fontSize.xs,
+      letterSpacing: 0.2,
+      marginTop: 1,
     },
     filtersContainer: {
       position: "absolute",
@@ -392,24 +419,26 @@ function createStyles(colors: ThemeColors) {
     },
     filtersScroll: {
       paddingHorizontal: spacing.xl,
-      gap: spacing.sm,
+      gap: spacing.xs + 2,
     },
     filterChip: {
-      paddingHorizontal: spacing.md,
+      paddingHorizontal: spacing.md + 2,
       paddingVertical: spacing.xs + 2,
-      borderRadius: 9999,
+      borderRadius: radius.pill,
       borderWidth: 1,
     },
     filterChipText: {
       fontFamily: fontFamily.medium,
-      fontSize: fontSize.sm,
+      fontSize: fontSize.xs,
+      letterSpacing: 0.3,
     },
     legend: {
       position: "absolute",
-      left: spacing.xl,
+      left: spacing.lg,
       backgroundColor: colors.glassBase,
-      borderRadius: 10,
-      padding: spacing.sm,
+      borderRadius: radius.sm,
+      paddingVertical: spacing.sm - 1,
+      paddingHorizontal: spacing.sm + 2,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: colors.glassBorder,
     },
