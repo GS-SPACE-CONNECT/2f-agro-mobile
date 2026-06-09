@@ -131,7 +131,8 @@
   "profile": {
     "title": "Perfil",
     "unknown_user": "Usuário",
-    "sign_out": "Sair"
+    "sign_out": "Sair",
+    "settings_section": "Configurações"
   },
   "settings": {
     "theme": "Tema",

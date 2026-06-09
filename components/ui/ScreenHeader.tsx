@@ -1,8 +1,4 @@
-// Standard header for tab screens. Replaces the ad-hoc <View><Text/></View>
-// pattern repeated across (tabs)/index, leads, profile. Title is h1, optional
-// subtitle is body textMuted, optional trailing slot is right-aligned for
-// actions like filter / refresh / count.
-// Header padronizado das tabs. Substitui o markup inline duplicado.
+// Header padronizado das tabs. Playfair Display regular (editorial).
 
 import { useMemo, type ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -51,7 +47,7 @@ function createStyles(c: ThemeColors) {
     },
     text: { flex: 1, gap: spacing.xs },
     title: {
-      ...typography.h1,
+      ...typography.hDisplay,
       color: c.text,
     },
     subtitle: {
