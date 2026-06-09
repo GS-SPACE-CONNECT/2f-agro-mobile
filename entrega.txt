@@ -1,0 +1,12 @@
+GLOBAL SOLUTION 2026.1 — MOBILE DEVELOPMENT AND IOT
+
+INTEGRANTES:
+- João Victor Franco | RM: 556790
+- Bruno Leão | RM: 555563
+- Ruan Melo | RM: 557599
+- Rodrigo Jimenez | RM: 558148
+- Lucca Borges | RM: 554608
+
+REPOSITÓRIO GITHUB: https://github.com/GS-SPACE-CONNECT/2f-agro-mobile
+
+VÍDEO DE DEMONSTRAÇÃO: <PREENCHER: link do YouTube, Drive ou similar — máx. 3 minutos>
