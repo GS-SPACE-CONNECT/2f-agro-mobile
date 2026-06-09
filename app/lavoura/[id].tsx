@@ -99,7 +99,7 @@ export default function LavouraDetailScreen() {
 
   const palette = lavouraSaudePalette[detalhe.saude];
   const probPct = Math.round(detalhe.mlPredicao.probabilidadeRisco * 100);
-  const heroColor = hexToRgba(colors.text, 0.7);
+  const heroColor = hexToRgba(colors.text, 0.55);
 
   const areaText = detalhe.areaHectares.toLocaleString("pt-BR", {
     minimumFractionDigits: 1,
@@ -315,7 +315,7 @@ function createStyles(c: ThemeColors) {
     separator: {
       height: StyleSheet.hairlineWidth,
       backgroundColor: c.separator,
-      marginVertical: spacing.xl,
+      marginVertical: spacing["2xl"],
     },
 
     // Secoes
@@ -333,16 +333,17 @@ function createStyles(c: ThemeColors) {
       flexDirection: "row",
       alignItems: "baseline",
       gap: spacing.sm,
+      marginBottom: spacing.sm,
     },
     heroNumber: {
       fontFamily: fontFamily.light,
-      fontSize: 56,
-      lineHeight: 60,
+      fontSize: 52,
+      lineHeight: 56,
       letterSpacing: -3,
     },
     heroPercent: {
       fontFamily: fontFamily.light,
-      fontSize: 24,
+      fontSize: 20,
       letterSpacing: -1,
     },
     heroSuffix: {
@@ -353,7 +354,7 @@ function createStyles(c: ThemeColors) {
       textTransform: "uppercase",
     },
     heroCaption: {
-      fontFamily: fontFamily.regular,
+      fontFamily: fontFamily.light,
       fontSize: 13,
       color: c.textMuted,
       marginTop: spacing.xs,
@@ -383,7 +384,7 @@ function createStyles(c: ThemeColors) {
       flexDirection: "row",
       alignItems: "center",
       gap: spacing.sm,
-      paddingVertical: spacing.sm,
+      paddingVertical: spacing.md,
     },
     alertaDot: {
       width: 6,
@@ -412,7 +413,7 @@ function createStyles(c: ThemeColors) {
     acaoRow: {
       flexDirection: "row",
       gap: spacing.md,
-      paddingVertical: spacing.sm + 2,
+      paddingVertical: spacing.md,
       borderBottomWidth: StyleSheet.hairlineWidth,
       borderBottomColor: c.separator,
     },

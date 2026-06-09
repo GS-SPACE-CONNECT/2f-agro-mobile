@@ -41,7 +41,6 @@ import type { Alerta, Lavoura } from "@/lib/types";
 import { fontFamily, radius, spacing, typography, type ThemeColors } from "@/lib/theme";
 
 const TOP_VISIBLE = 6;
-const LIST_HORIZONTAL_PADDING = 0; // rows ja tem padding interno
 const SECTION_HORIZONTAL_PADDING = 30;
 const HERO_AREA_HEIGHT = 490;
 
@@ -226,7 +225,7 @@ export default function HomeScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={t("home.foto_folha_cta")}
               >
-                <Ionicons name="camera-outline" size={24} color={colors.text} />
+                <Ionicons name="camera-outline" size={20} color={colors.text} />
                 <Text style={styles.actionLabel}>{t("home.foto_folha_cta")}</Text>
               </Pressable>
 
@@ -237,7 +236,7 @@ export default function HomeScreen() {
                 accessibilityLabel={t("home.mapa_cta")}
                 accessibilityState={{ disabled: true }}
               >
-                <Ionicons name="map-outline" size={24} color={colors.textSubtle} />
+                <Ionicons name="map-outline" size={20} color={colors.textSubtle} />
                 <Text style={[styles.actionLabel, { color: colors.textSubtle }]}>
                   {t("home.mapa_cta")}
                 </Text>
@@ -255,7 +254,7 @@ export default function HomeScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={t("home.cooperativa_cta")}
               >
-                <Ionicons name="people-outline" size={24} color={colors.text} />
+                <Ionicons name="people-outline" size={20} color={colors.text} />
                 <Text style={styles.actionLabel}>{t("home.cooperativa_cta")}</Text>
               </Pressable>
             </View>
@@ -315,7 +314,7 @@ function createStyles(c: ThemeColors) {
       ...typography.hSectionItalic,
       color: c.text,
       paddingHorizontal: SECTION_HORIZONTAL_PADDING,
-      marginTop: spacing.sm,
+      marginTop: spacing.md,
       marginBottom: spacing.md,
     },
     errorWrap: {
@@ -356,8 +355,10 @@ function createStyles(c: ThemeColors) {
       minWidth: 80,
     },
     actionLabel: {
-      fontFamily: fontFamily.semibold,
-      fontSize: 16,
+      fontFamily: fontFamily.medium,
+      fontSize: 12,
+      letterSpacing: 1.5,
+      textTransform: "uppercase",
       color: c.text,
     },
     greeting: {
