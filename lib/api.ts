@@ -126,11 +126,6 @@ const mockApi = {
     return { cooperativas: [] };
   },
 
-  async getAlerta(id: string): Promise<Alerta | null> {
-    await delay(FAKE_LATENCY_MS);
-    return mock.ALERTAS.find((a) => a.id === id) ?? null;
-  },
-
   async confirmarAlerta(_id: string): Promise<void> {
     await delay(FAKE_LATENCY_MS);
   },
