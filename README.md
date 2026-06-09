@@ -211,18 +211,13 @@ EXPO_PUBLIC_API_URL=http://seu-ip:5000/api
 
 ## Integrantes
 
-<!--
-  JOTA: preencha com nome completo e RM de cada integrante.
-  Formato: Nome Completo | RM: 000000
--->
-
 | Nome | RM | GitHub |
 |------|----|--------|
-| <!-- Nome Completo --> | <!-- RM000000 --> | [@jota0802](https://github.com/jota0802) |
-| <!-- Nome Completo --> | <!-- RM000000 --> | [@brnleao](https://github.com/brnleao) |
-| <!-- Nome Completo --> | <!-- RM000000 --> | [@DevRuanVieira](https://github.com/DevRuanVieira) |
-| <!-- Nome Completo --> | <!-- RM000000 --> | [@lucksza](https://github.com/lucksza) |
-| <!-- Nome Completo --> | <!-- RM000000 --> | [@roji-menez](https://github.com/roji-menez) |
+| João Victor Franco | 556790 | [@jota0802](https://github.com/jota0802) |
+| Bruno Leão | 555563 | [@brnleao](https://github.com/brnleao) |
+| Ruan Melo | 557599 | [@DevRuanVieira](https://github.com/DevRuanVieira) |
+| Lucca Borges | 554608 | [@lucksza](https://github.com/lucksza) |
+| Rodrigo Jimenez | 558148 | [@roji-menez](https://github.com/roji-menez) |
 
 **Organização GitHub:** [GS-SPACE-CONNECT](https://github.com/GS-SPACE-CONNECT)
 
