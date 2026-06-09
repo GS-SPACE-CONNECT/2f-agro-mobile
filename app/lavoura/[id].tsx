@@ -23,6 +23,7 @@ import { AlertSeverityBadge } from "@/components/ui/AlertSeverityBadge";
 import { NdviChart } from "@/components/domain/NdviChart";
 import { useTheme } from "@/context/ThemeContext";
 import { api } from "@/lib/api";
+import { hexToRgba } from "@/lib/color";
 import { formatRelativeTime } from "@/lib/relative-time";
 import type { Alerta, LavouraDetalhe } from "@/lib/types";
 import {
@@ -33,15 +34,6 @@ import {
   typography,
   type ThemeColors,
 } from "@/lib/theme";
-
-/** Converte hex (#RRGGBB) pra rgba com alpha. */
-function hexToRgba(hex: string, alpha: number): string {
-  const clean = hex.startsWith("#") ? hex.slice(1) : hex;
-  const r = parseInt(clean.slice(0, 2), 16);
-  const g = parseInt(clean.slice(2, 4), 16);
-  const b = parseInt(clean.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
 
 const PRIORIDADE_DOT_COLOR: Record<string, string> = {
   alta: "#F97316",

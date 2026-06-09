@@ -184,22 +184,51 @@ export const PRAGAS_DETECTAVEIS: PragaTemplate[] = [
       "Pulverize fungicida nas próximas 48 horas. Comece pelas folhas baixeiras.",
     agronomoTelefone: "+5581999990000",
   },
-  // TODO(jota): +3 a 6 entradas. Sugestoes pra preencher:
-  //   - lagarta_do_cartucho   (milho, severidade: alto)
-  //   - mancha_foliar         (varias, severidade: medio)
-  //   - oidio                 (tomate/alface, severidade: medio)
-  //   - mosca_branca          (tomate, severidade: alto)
-  //   - antracnose            (feijao/mandioca, severidade: medio)
-  //
-  // Modelo:
-  // {
-  //   praga: "lagarta_do_cartucho",
-  //   pragaLabel: "Lagarta-do-cartucho",
-  //   confianca: 0.79,
-  //   severidade: "alto",
-  //   recomendacao: "...",
-  //   agronomoTelefone: "+5581999990000",
-  // },
+  {
+    praga: "lagarta_do_cartucho",
+    pragaLabel: "Lagarta-do-cartucho",
+    confianca: 0.79,
+    severidade: "alto",
+    recomendacao:
+      "Aplique inseticida biológico (Bt) no milho. Verifique o cartucho das folhas novas.",
+    agronomoTelefone: "+5581999990000",
+  },
+  {
+    praga: "mancha_foliar",
+    pragaLabel: "Mancha Foliar",
+    confianca: 0.72,
+    severidade: "medio",
+    recomendacao:
+      "Remova folhas afetadas e melhore a ventilação entre plantas. Evite molhar as folhas.",
+    agronomoTelefone: "+5581999990000",
+  },
+  {
+    praga: "oidio",
+    pragaLabel: "Oídio",
+    confianca: 0.83,
+    severidade: "medio",
+    recomendacao:
+      "Aplique calda de enxofre ou leite diluído nas folhas do tomate. Repita em 5 dias.",
+    agronomoTelefone: "+5581999990000",
+  },
+  {
+    praga: "mosca_branca",
+    pragaLabel: "Mosca-branca",
+    confianca: 0.88,
+    severidade: "alto",
+    recomendacao:
+      "Use armadilha adesiva amarela e aplique óleo de neem. Monitore face inferior das folhas.",
+    agronomoTelefone: "+5581999990000",
+  },
+  {
+    praga: "antracnose",
+    pragaLabel: "Antracnose",
+    confianca: 0.75,
+    severidade: "medio",
+    recomendacao:
+      "Retire os frutos manchados e aplique fungicida à base de cobre no feijão.",
+    agronomoTelefone: "+5581999990000",
+  },
 ];
 
 /**

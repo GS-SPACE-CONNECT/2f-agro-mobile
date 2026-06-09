@@ -121,6 +121,11 @@ const mockApi = {
     return { cooperativas: [] };
   },
 
+  async getAlerta(id: string): Promise<Alerta | null> {
+    await delay(FAKE_LATENCY_MS);
+    return mock.ALERTAS.find((a) => a.id === id) ?? null;
+  },
+
   async confirmarAlerta(_id: string): Promise<void> {
     await delay(FAKE_LATENCY_MS);
   },
@@ -252,6 +257,15 @@ const realApi = {
   },
 
   // ========== Alertas ==========
+
+  async getAlerta(id: string): Promise<Alerta | null> {
+    try {
+      return await request<Alerta>(`/api/alertas/${id}`);
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 404) return null;
+      throw e;
+    }
+  },
 
   async confirmarAlerta(id: string): Promise<void> {
     return request<void>(`/api/alertas/${id}/confirmar`, {
