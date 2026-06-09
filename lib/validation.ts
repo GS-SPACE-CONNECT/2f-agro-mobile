@@ -43,3 +43,15 @@ export function validateName(name: string): ValidationResult {
   if (trimmed.length < NAME_MIN_LENGTH) return { key: "validation.name_short" };
   return undefined;
 }
+
+export function validateIdentificador(value: string): ValidationResult {
+  if (!value.trim()) return { key: "validation.identificador_required" };
+  return undefined;
+}
+
+export function validateArea(value: string): ValidationResult {
+  if (!value.trim()) return { key: "validation.area_required" };
+  const num = parseFloat(value.replace(",", "."));
+  if (isNaN(num) || num <= 0) return { key: "validation.area_invalid" };
+  return undefined;
+}

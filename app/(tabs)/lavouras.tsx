@@ -4,8 +4,10 @@
 // Lista de lavouras: vertical, todas visiveis.
 
 import { useCallback, useMemo, useState } from "react";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, StyleSheet, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { AppBackground } from "@/components/ui/AppBackground";
@@ -16,13 +18,15 @@ import { LavouraRowSkeleton } from "@/components/domain/LavouraRowSkeleton";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useTheme } from "@/context/ThemeContext";
 import { useLavouras } from "@/hooks/useQueries";
-import { spacing, type ThemeColors } from "@/lib/theme";
+import { haptic } from "@/lib/haptics";
+import { radius, spacing, type ThemeColors } from "@/lib/theme";
 
 const HORIZONTAL_PADDING = 30;
 
 export default function LavourasScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
   // React Query: serve dados do cache AsyncStorage quando offline
@@ -93,11 +97,28 @@ export default function LavourasScreen() {
           />
         )}
       />
+
+      {/* FAB — Nova Lavoura */}
+      <Pressable
+        onPress={() => {
+          haptic.light();
+          router.push("/lavoura/nova" as never);
+        }}
+        accessibilityRole="button"
+        accessibilityLabel={t("lavoura_form.title_criar")}
+        style={({ pressed }) => [
+          styles.fab,
+          { bottom: insets.bottom + 100 },
+          pressed && styles.fabPressed,
+        ]}
+      >
+        <Ionicons name="add" size={28} color={colors.primaryText} />
+      </Pressable>
     </AppBackground>
   );
 }
 
-function createStyles(_c: ThemeColors) {
+function createStyles(c: ThemeColors) {
   return StyleSheet.create({
     container: { backgroundColor: "transparent" },
     list: { paddingBottom: spacing["6xl"] },
@@ -105,5 +126,21 @@ function createStyles(_c: ThemeColors) {
       paddingHorizontal: HORIZONTAL_PADDING,
       marginBottom: spacing.lg,
     },
+    fab: {
+      position: "absolute",
+      right: spacing["2xl"],
+      width: 56,
+      height: 56,
+      borderRadius: radius.pill,
+      backgroundColor: c.primary,
+      alignItems: "center",
+      justifyContent: "center",
+      elevation: 6,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.25,
+      shadowRadius: 6,
+    },
+    fabPressed: { opacity: 0.9, transform: [{ scale: 0.95 }] },
   });
 }
