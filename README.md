@@ -124,6 +124,15 @@ npx expo start
 #    - iOS: abra a câmera nativa e aponte para o QR Code
 ```
 
+### Login de demonstração
+
+A autenticação é mock no protótipo: **qualquer e-mail válido + senha com 6+ caracteres** entra. Sugestão:
+
+```text
+Email: seujoao@2fagro.com.br
+Senha: roca2026
+```
+
 ### Variáveis de ambiente (opcional)
 
 O app funciona com **dados mockados** por padrão (sem necessidade de backend). Para conectar ao backend .NET:
@@ -192,20 +201,13 @@ EXPO_PUBLIC_API_URL=http://seu-ip:5000/api
 
 ## Capturas de Tela
 
-<!--
-  JOTA: tire screenshots do app rodando no Expo Go e salve em assets/prints/.
-  As imagens abaixo são placeholders — substitua pelos caminhos reais.
--->
+| Login | Home — "Sua Roça Hoje" | Detalhe da Lavoura (NDVI + ML) | Câmera — Diagnóstico |
+|:---:|:---:|:---:|:---:|
+| <img src="assets/prints/login.png" width="185" alt="Login" /> | <img src="assets/prints/home.png" width="185" alt="Home" /> | <img src="assets/prints/lavoura-detalhe.png" width="185" alt="Detalhe da Lavoura" /> | <img src="assets/prints/camera.png" width="185" alt="Câmera" /> |
 
-| Tela | Preview |
-|------|---------|
-| Home — "Sua Roça Hoje" | ![Home](assets/prints/home.png) |
-| Detalhe da Lavoura (NDVI + ML) | ![Detalhe Lavoura](assets/prints/lavoura-detalhe.png) |
-| Câmera — Diagnóstico de Pragas | ![Câmera](assets/prints/camera.png) |
-| Cooperativa — Mapa | ![Mapa](assets/prints/cooperativa-mapa.png) |
-| Perfil e Configurações | ![Perfil](assets/prints/perfil.png) |
-| Login | ![Login](assets/prints/login.png) |
-| Tema Escuro | ![Dark Mode](assets/prints/dark-mode.png) |
+| Cooperativa — Mapa | Perfil e Configurações | Tema Claro |
+|:---:|:---:|:---:|
+| <img src="assets/prints/cooperativa-mapa.png" width="185" alt="Mapa da Cooperativa" /> | <img src="assets/prints/perfil.png" width="185" alt="Perfil" /> | <img src="assets/prints/tema-claro.png" width="185" alt="Tema Claro" /> |
 
 ---
 
