@@ -73,7 +73,7 @@ O 2F-AGRO conecta a **economia espacial** diretamente à agricultura familiar br
 | 5 | **Câmera — "Olho na Folha"** | Captura de foto da folha → análise de IA → diagnóstico de praga com tipo, confiança (%) e recomendação |
 | 6 | **Cooperativa — Mapa** | Mapa com marcadores de propriedades vizinhas, filtro por tipo de alerta, legenda de saúde semafórica |
 | 7 | **Perfil** | Avatar, dados da propriedade, alternância tema claro/escuro, velocidade do TTS, idioma, logout |
-| 8 | **Detalhe do Alerta** | Informações detalhadas do alerta (em implementação — Sprint 2) |
+| 8 | **Detalhe do Alerta** | Probabilidade, severidade, recomendação prática e botão 🔊 Ouvir (TTS) — acessibilidade pro agricultor |
 
 ---
 
