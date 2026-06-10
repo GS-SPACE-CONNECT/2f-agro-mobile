@@ -37,7 +37,7 @@ import { LocaleProvider } from "@/context/LocaleContext";
 import { NavigationThemeBridge, ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { TTSProvider } from "@/context/TTSContext";
 import { UserLocationProvider } from "@/context/UserLocationContext";
-import { auth, type Session } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { registrarBackgroundSync } from "@/lib/background-sync";
 import { queryClient, asyncStoragePersister } from "@/lib/query-client";
 import { processarFila } from "@/lib/offline-queue";
@@ -74,7 +74,6 @@ export default function RootLayout() {
 function RootStack() {
   const { colors, mode, isHydrated: themeHydrated } = useTheme();
   const [ready, setReady] = useState(false);
-  const [session, setSession] = useState<Session | null>(null);
 
   const [fontsLoaded] = useFonts({
     ...Ionicons.font,
@@ -89,13 +88,12 @@ function RootStack() {
     Manrope_700Bold,
   });
 
-  // Auth mock: le sessao persistida ao boot. Sprint 2 sobe pra refresh
-  // token + listener de mudancas como o Supabase fazia.
+  // Espera a primeira leitura da sessão antes de montar o Stack — evita
+  // flash da tela errada no boot.
   useEffect(() => {
     let cancelled = false;
-    auth.getSession().then((s) => {
+    auth.getSession().then(() => {
       if (cancelled) return;
-      setSession(s);
       setReady(true);
     });
     return () => {
@@ -103,7 +101,7 @@ function RootStack() {
     };
   }, []);
 
-  useGuardedRedirect(ready && themeHydrated, session);
+  useGuardedRedirect(ready && themeHydrated);
 
   return (
     <View style={[styles.root, { backgroundColor: colors.bg }]}>
@@ -133,17 +131,27 @@ const styles = StyleSheet.create({
   root: { flex: 1 },
 });
 
-function useGuardedRedirect(ready: boolean, session: Session | null) {
+function useGuardedRedirect(ready: boolean) {
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
     if (!ready) return;
-    const onLogin = segments[0] === "login";
-    if (!session && !onLogin) {
-      router.replace("/login");
-    } else if (session && onLogin) {
-      router.replace("/");
-    }
-  }, [ready, session, segments, router]);
+    let cancelled = false;
+    // Lê a sessão do storage a cada navegação: signIn/signOut não emitem
+    // evento, então qualquer estado capturado no boot fica stale — o guard
+    // devolveria o usuário pro login logo após entrar (e vice-versa no sair).
+    void auth.getSession().then((s) => {
+      if (cancelled) return;
+      const onLogin = segments[0] === "login";
+      if (!s && !onLogin) {
+        router.replace("/login");
+      } else if (s && onLogin) {
+        router.replace("/");
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, segments, router]);
 }

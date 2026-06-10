@@ -21,6 +21,12 @@ export async function speak(text: string, rate = 1.0): Promise<void> {
       language: "pt-BR",
       rate,
       pitch: 1.0,
+      // No Android a falha chega assíncrona (ex.: voz pt-BR não instalada
+      // no aparelho) e sem onError ela é engolida — o botão fica "mudo"
+      // sem pista nenhuma. console.warn não vira toast LogBox.
+      onError: (error) => {
+        console.warn("TTS falhou (voz pt-BR instalada?):", error);
+      },
     });
   } catch {
     // simulador/web pode falhar — silenciado

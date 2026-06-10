@@ -2,7 +2,7 @@
 // e acoes recomendadas. Layout editorial: tipografia thin-weight + hairline
 // separadores, sem chrome de card. Cor so no accent (saude palette).
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -11,7 +11,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -68,9 +68,13 @@ export default function LavouraDetailScreen() {
     }
   }, [id]);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
+  // useFocusEffect (não useEffect): ao voltar da edição (router.back), a tela
+  // continua montada e um useEffect[id] não re-executa — mostraria dado velho.
+  useFocusEffect(
+    useCallback(() => {
+      void load();
+    }, [load]),
+  );
 
   // Loading
   if (loading) {

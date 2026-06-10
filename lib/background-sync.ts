@@ -3,6 +3,7 @@
 // IMPORTANTE: defineTask DEVE ser chamado no top-level do módulo
 // (importado no _layout.tsx antes de qualquer render).
 
+import { isRunningInExpoGo } from "expo";
 import * as BackgroundFetch from "expo-background-fetch";
 import * as TaskManager from "expo-task-manager";
 
@@ -38,6 +39,11 @@ TaskManager.defineTask(BACKGROUND_SYNC_TASK, async () => {
 // ---------------------------------------------------------------------------
 
 export async function registrarBackgroundSync(): Promise<void> {
+  // Background fetch não roda no Expo Go (só em dev build) e as chamadas
+  // logam 2 console.warn no boot — que viram toast LogBox por cima do app.
+  // No Go, a fila offline já é processada no boot e após cada mutação.
+  if (isRunningInExpoGo()) return;
+
   const status = await BackgroundFetch.getStatusAsync();
 
   if (status === BackgroundFetch.BackgroundFetchStatus.Denied) {

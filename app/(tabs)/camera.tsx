@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { useIsFocused } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -44,6 +45,10 @@ export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [state, setState] = useState<ScreenState>({ kind: "camera_ready" });
   const cameraRef = useRef<CameraView | null>(null);
+  // Com freezeOnBlur no tab navigator, manter a CameraView montada em
+  // background segura a sessão da câmera — no Android a volta pra aba
+  // mostra surface preta. Desmonta quando a tela perde o foco.
+  const isFocused = useIsFocused();
 
   // Reconcilia permission do hook com nosso state local. O hook do
   // expo-camera ja gerencia o pedido — usamos so pra decidir o que renderizar.
@@ -243,11 +248,13 @@ export default function CameraScreen() {
   // camera_ready
   return (
     <View style={styles.cameraRoot}>
-      <CameraView
-        ref={cameraRef}
-        style={StyleSheet.absoluteFill}
-        facing="back"
-      />
+      {isFocused && (
+        <CameraView
+          ref={cameraRef}
+          style={StyleSheet.absoluteFill}
+          facing="back"
+        />
+      )}
 
       {/* Guias de enquadramento — 4 cantos L */}
       <View style={styles.framingGuide} pointerEvents="none">
