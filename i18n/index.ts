@@ -2,6 +2,10 @@
 // se relevante (estrutura ja preparada).
 // Bootstrap i18n: pt-BR only.
 
+// Hermes não traz Intl.PluralRules — sem o polyfill o i18next loga erro e
+// regride pro formato v3, quebrando as chaves _one/_other do pt-BR.json.
+import "intl-pluralrules";
+
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
