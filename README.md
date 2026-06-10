@@ -199,6 +199,12 @@ EXPO_PUBLIC_API_URL=http://seu-ip:5000/api
 
 ---
 
+## Vídeo de Demonstração
+
+🎥 **[Assista à demo (3 min) — Google Drive](https://drive.google.com/file/d/1KuqM0XDjQWW6iVrAE4eCxZrRCGGswDdU/view?usp=sharing)** — app completo rodando: login, dashboards, diagnóstico por câmera, mapa da cooperativa, TTS e modo offline.
+
+---
+
 ## Capturas de Tela
 
 | Login | Home — "Sua Roça Hoje" | Detalhe da Lavoura (NDVI + ML) | Câmera — Diagnóstico |
